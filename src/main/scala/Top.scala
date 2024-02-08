@@ -102,6 +102,8 @@ trait VerilateTestHarness { this: Toplevel =>
   def build() = {
     val cmd = Seq("make", "-j", "-C", "obj_dir/", "-f", s"VTestHarness.mk")
     os.proc(cmd).call(cwd = os.Path(s"${os.pwd.toString()}/${out_dir}"), stdout = os.Inherit)
+    println(s"VTestHarness executable in ./generated_sv_dir/${topModule_name}/obj_dir directory.")
+    println(s"Run simulation using: ./VTestHarness <rv32IMA>.elf")
   }
 }
 
@@ -112,6 +114,7 @@ trait LazyToplevel extends Toplevel {
 
   def genDiplomacyGraph() = {
     ElaborationArtefacts.add("graphml", lazyTop.graphML)
+    Files.createDirectories(Paths.get(out_dir))
     ElaborationArtefacts.files.foreach {
       case ("graphml", graphML) =>
         val fw = new FileWriter(new File(s"${out_dir}", s"${lazyTop.className}.graphml"))

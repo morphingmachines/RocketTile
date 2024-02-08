@@ -17,8 +17,6 @@ test:## Run Chisel tests
 .PHONY: verilate 
 verilate:## Generate Verilator simulation executable
 	$(MILL) $(project).runMain $(project).TestLazyMain
-	@echo "Find VTestHarness executable in ./generated_sv_dir/<top_module_name>/obj_dir directory."
-	@echo "Useage: ./VTestHarness <rv32IMA>.elf"
 
 .PHONY: lint
 lint: ## Formats code using scalafmt and scalafix
