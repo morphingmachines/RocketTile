@@ -22,7 +22,10 @@ The output verilog files are generated in the `./generated_sv_dir` directory. Th
 ![diplomacy_graph](./doc/figures/SimDUT.jpg)
 ## Simulator
 
-Simulator executable can be generated using using the `verilate` Makefile target.
+ We assume [Spike RISCV-V ISA Simulator](https://github.com/riscv-software-src/riscv-isa-sim) is installed and `RISCV` environment variable is set to the Spike install path. The test bench setup uses Front-End Server (FESVR), a C++ library that manages communication between a host machine and a RISC-V DUT, which is part of the [Spike](https://github.com/riscv-software-src/riscv-isa-sim) build.
+
+Simulator executable can be generated using the `verilate` Makefile target.
+
 ```sh
 make verilate
 ```

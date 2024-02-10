@@ -15,7 +15,7 @@ test:## Run Chisel tests
 	@echo "If using WriteVcdAnnotation in your tests, the VCD files are generated in ./test_run_dir/testname directories."
 
 .PHONY: verilate 
-verilate:## Generate Verilator simulation executable
+verilate: check-env ## Generate Verilator simulation executable
 	$(MILL) $(project).runMain $(project).TestLazyMain
 
 .PHONY: lint
@@ -31,6 +31,12 @@ lint-test: ## Formats code using scalafmt and scalafix
 .PHONY: console
 console: ## Start a scala console within this project
 	$(MILL) -i $(project).console
+
+.PHONY: check-env
+check-env:
+ifndef RISCV
+	$(error RISCV environment variable is not defined)
+endif	
 
 .PHONY: clean
 clean:   ## Clean all generated files
