@@ -8,6 +8,7 @@ import freechips.rocketchip.subsystem.{CacheBlockBytes, RocketCrossingParams}
 import freechips.rocketchip.tile.{HartsWontDeduplicate, MaxHartIdBits, NMI, RocketTile, RocketTileParams, XLen}
 import freechips.rocketchip.tilelink.{TLManagerNode, TLSlaveParameters, TLSlavePortParameters}
 import org.chipsalliance.cde.config.{Config, Field, Parameters}
+import freechips.rocketchip.tile.TraceBundle
 
 case object CETileParams extends Field[RocketTileParams]
 
@@ -87,13 +88,17 @@ class CERISCV()(implicit p: Parameters = new Config(new CEConfig)) extends LazyM
   val wfiIO = InModuleBody(wfiNodeSink.makeIOs())
 
   // Enable non-maskable interrupts to access this.
-  cetile.nmiNode := BundleBridgeSource[NMI](None)
+  cetile.nmiNode.map(_ := BundleBridgeSource[NMI](None))
 
-  // core halts on non-recoverable error. ECC error in DCache cause such an error. Enable ECC in DCsChe to access this signal.
+  // core halts on non-recoverable error. ECC error in DCache cause such an error. Enable ECC in DCache to access this signal.
   IntSinkNode(IntSinkPortSimple()) := cetile.haltNode
 
   // core ceases on clockGate. Enable clockGate to access this signal
   IntSinkNode(IntSinkPortSimple()) := cetile.ceaseNode
+
+  val traceSink = BundleBridgeSink[TraceBundle](None)
+  traceSink := cetile.traceSourceNode
+
 
   override lazy val module = new CERISCVImp(this)
 }
