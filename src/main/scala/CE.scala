@@ -5,15 +5,21 @@ import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.interrupts._
 import freechips.rocketchip.rocket.{DCacheParams, ICacheParams, MulDivParams, RocketCoreParams}
 import freechips.rocketchip.subsystem.{CacheBlockBytes, RocketCrossingParams}
-import freechips.rocketchip.tile.{HartsWontDeduplicate, MaxHartIdBits, NMI, RocketTile, RocketTileParams, XLen}
+import freechips.rocketchip.tile.{
+  HartsWontDeduplicate,
+  MaxHartIdBits,
+  NMI,
+  RocketTile,
+  RocketTileParams,
+  TileKey,
+  TraceBundle,
+  XLen,
+}
 import freechips.rocketchip.tilelink.{TLManagerNode, TLSlaveParameters, TLSlavePortParameters}
-import org.chipsalliance.cde.config.{Config, Field, Parameters}
-import freechips.rocketchip.tile.TraceBundle
-
-case object CETileParams extends Field[RocketTileParams]
+import org.chipsalliance.cde.config.{Config, Parameters}
 
 class CEConfig
-  extends Config((_, _, site) => {
+  extends Config((_, here, _) => {
     case XLen          => 32
     case MaxHartIdBits => 8
     // case BuildRoCC =>
@@ -22,7 +28,7 @@ class CEConfig
     //    blackbox
     //  }
     case CacheBlockBytes => 4
-    case CETileParams => {
+    case TileKey => {
       RocketTileParams(
         core = RocketCoreParams(
           useVM = false,
@@ -42,7 +48,7 @@ class CEConfig
             nTLBSets = 1,
             nTLBWays = 4,
             nMSHRs = 0,
-            blockBytes = site(CacheBlockBytes),
+            blockBytes = here(CacheBlockBytes),
             // scratch = Some(0x80000000L),
           ),
         ),
@@ -53,7 +59,7 @@ class CEConfig
             nWays = 1,
             nTLBSets = 1,
             nTLBWays = 4,
-            blockBytes = site(CacheBlockBytes),
+            blockBytes = here(CacheBlockBytes),
           ),
         ),
       )
@@ -62,7 +68,7 @@ class CEConfig
 
 class CERISCV()(implicit p: Parameters = new Config(new CEConfig)) extends LazyModule with BindingScope {
   val cetile = LazyModule(
-    new RocketTile(p(CETileParams), RocketCrossingParams(), HartsWontDeduplicate(p(CETileParams))),
+    new RocketTile(p(TileKey).asInstanceOf[RocketTileParams], RocketCrossingParams(), HartsWontDeduplicate(p(TileKey))),
   )
 
   val intSourcePortParams = IntSourcePortParameters(sources =
@@ -98,7 +104,6 @@ class CERISCV()(implicit p: Parameters = new Config(new CEConfig)) extends LazyM
 
   val traceSink = BundleBridgeSink[TraceBundle](None)
   traceSink := cetile.traceSourceNode
-
 
   override lazy val module = new CERISCVImp(this)
 }

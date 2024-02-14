@@ -4,7 +4,7 @@ import chisel3._
 import freechips.rocketchip.devices.tilelink.{BootROMParams, CLINT, CLINTParams, TLROM}
 import freechips.rocketchip.diplomacy.{AddressSet, BufferParams, DisableMonitors, LazyModule, LazyModuleImp}
 import freechips.rocketchip.interrupts.{IntSinkNode, IntSinkParameters, IntSinkPortParameters}
-import freechips.rocketchip.tilelink.{TLBuffer, TLCacheCork, TLCacheCorkParams, TLFIFOFixer, TLRAM, TLXbar}
+import freechips.rocketchip.tilelink.{TLBroadcast, TLBuffer, TLFIFOFixer, TLRAM, TLXbar}
 import org.chipsalliance.cde.config.{Field, Parameters}
 import testchipip.tsi._
 
@@ -22,9 +22,8 @@ class SimMemory(implicit p: Parameters) extends LazyModule {
   val clint   = LazyModule(new CLINT(params = CLINTParams(), beatBytes = 4))
   val intSink = IntSinkNode(Seq(IntSinkPortParameters(Seq(IntSinkParameters()))))
 
-  val tlram = LazyModule(new TLRAM(address = new AddressSet(0x80000000L, 0xfff), beatBytes = 4))
-
-  val tlCacheCork = LazyModule(new TLCacheCork(TLCacheCorkParams(unsafe = true)))
+  val tlram = LazyModule(new TLRAM(address = new AddressSet(0x80000000L, 0xfffff), beatBytes = 4))
+  val tlBroadcast = LazyModule(new TLBroadcast(lineBytes = 4, numTrackers = 1))
 
   val mbus   = LazyModule(new TLXbar)
   val rambus = LazyModule(new TLXbar)
@@ -34,9 +33,9 @@ class SimMemory(implicit p: Parameters) extends LazyModule {
   intSink := clint.intnode
   DisableMonitors { implicit p =>
     clint.node := iobus.node  := TLFIFOFixer(TLFIFOFixer.all)            := TLBuffer(BufferParams(1, false, false)) := mbus.node
-    tlram.node := rambus.node := TLBuffer(BufferParams(2, false, false)) := tlCacheCork.node                        := mbus.node
     tlrom.node := rambus.node
-    mbus.node  := tsi2tl.node
+    tlram.node := rambus.node := TLBuffer(BufferParams(2, false, false)) := tlBroadcast.node                        := mbus.node
+    mbus.node := tsi2tl.node
   }
 
   lazy val module = new SimMemoryImp(this)

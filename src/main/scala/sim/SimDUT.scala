@@ -2,16 +2,16 @@ package ce.sim
 
 import ce.{CEConfig, CERISCV}
 import chisel3._
-import freechips.rocketchip.diplomacy.{LazyModule, LazyModuleImp}
+import freechips.rocketchip.diplomacy.{DisableMonitors, LazyModule, LazyModuleImp}
 import org.chipsalliance.cde.config.{Config, Parameters}
 import testchipip.tsi.SimTSI
 class SimDUT(implicit p: Parameters) extends LazyModule {
   val ce     = LazyModule(new CERISCV()(new Config(new CEConfig())))
   val mem    = LazyModule(new SimMemory)
-  val toHost = LazyModule(new SimToHost)
 
-  mem.mbus.node  := ce.cetile.masterNode
-  toHost.regNode := mem.iobus.node
+  DisableMonitors { implicit p: Parameters =>
+    mem.mbus.node  := ce.cetile.masterNode
+  }
   lazy val module = new SimDUTImp(this)
 }
 
