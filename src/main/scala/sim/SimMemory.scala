@@ -4,26 +4,31 @@ import chisel3._
 import freechips.rocketchip.devices.tilelink.{BootROMParams, CLINT, CLINTParams, TLROM}
 import freechips.rocketchip.diplomacy.{AddressSet, BufferParams, DisableMonitors, LazyModule, LazyModuleImp}
 import freechips.rocketchip.interrupts.{IntSinkNode, IntSinkParameters, IntSinkPortParameters}
+import freechips.rocketchip.subsystem.CacheBlockBytes
 import freechips.rocketchip.tilelink.{TLBroadcast, TLBuffer, TLFIFOFixer, TLRAM, TLXbar}
-import org.chipsalliance.cde.config.{Field, Parameters}
+import org.chipsalliance.cde.config.Parameters
 import testchipip.tsi._
 
-case object BootROMFile extends Field[String]("./src/main/resources/bootrom/bootrom.rv32.img")
-
 class SimMemory(implicit p: Parameters) extends LazyModule {
+  println(s"cacheBlockBytes:${p(CacheBlockBytes)}")
 
-  val bootrom_params = new BootROMParams(contentFileName = p(BootROMFile))
+  val bootrom_params = new BootROMParams(contentFileName = p(ce.BootROMFile))
   import java.nio.file.{Files, Paths}
   val rom_contents = Files.readAllBytes(Paths.get(bootrom_params.contentFileName))
   val tlrom = LazyModule(
-    new TLROM(base = bootrom_params.address, size = bootrom_params.size, contentsDelayed = rom_contents.toIndexedSeq),
+    new TLROM(
+      base = bootrom_params.address,
+      size = bootrom_params.size,
+      contentsDelayed = rom_contents.toIndexedSeq,
+      beatBytes = p(CacheBlockBytes),
+    ),
   )
 
-  val clint   = LazyModule(new CLINT(params = CLINTParams(), beatBytes = 4))
+  val clint   = LazyModule(new CLINT(params = CLINTParams(), beatBytes = p(CacheBlockBytes)))
   val intSink = IntSinkNode(Seq(IntSinkPortParameters(Seq(IntSinkParameters()))))
 
-  val tlram = LazyModule(new TLRAM(address = new AddressSet(0x80000000L, 0xfffff), beatBytes = 4))
-  val tlBroadcast = LazyModule(new TLBroadcast(lineBytes = 4, numTrackers = 1))
+  val tlram       = LazyModule(new TLRAM(address = new AddressSet(0x80000000L, 0x3fffff), beatBytes = p(CacheBlockBytes)))
+  val tlBroadcast = LazyModule(new TLBroadcast(lineBytes = p(CacheBlockBytes), numTrackers = 1))
 
   val mbus   = LazyModule(new TLXbar)
   val rambus = LazyModule(new TLXbar)
@@ -35,7 +40,7 @@ class SimMemory(implicit p: Parameters) extends LazyModule {
     clint.node := iobus.node  := TLFIFOFixer(TLFIFOFixer.all)            := TLBuffer(BufferParams(1, false, false)) := mbus.node
     tlrom.node := rambus.node
     tlram.node := rambus.node := TLBuffer(BufferParams(2, false, false)) := tlBroadcast.node                        := mbus.node
-    mbus.node := tsi2tl.node
+    mbus.node  := tsi2tl.node
   }
 
   lazy val module = new SimMemoryImp(this)

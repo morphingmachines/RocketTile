@@ -16,7 +16,7 @@ test:## Run Chisel tests
 
 .PHONY: verilate 
 verilate: check-env ## Generate Verilator simulation executable
-	$(MILL) $(project).runMain $(project).TestLazyMain
+	$(MILL) $(project).runMain $(project).TestLazyMain RV32 
 
 .PHONY: lint
 lint: ## Formats code using scalafmt and scalafix
@@ -27,6 +27,11 @@ lint: ## Formats code using scalafmt and scalafix
 lint-test: ## Formats code using scalafmt and scalafix
 	$(MILL) $(project).test.fix
 	$(MILL) $(project).test.reformat
+
+.PHONY: scaladoc
+scaladoc: ## Generates Scala API documentation that can view in a browser
+	$(MILL) -i -j 0 $(project).docJar
+	@echo "Scala documentation HTML files generated in ./out/$(project)/docJar.dest/javadoc"
 
 .PHONY: console
 console: ## Start a scala console within this project

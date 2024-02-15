@@ -1,16 +1,17 @@
 package ce.sim
 
-import ce.{CEConfig, CERISCV}
+import ce.{CERISCV, RV32Config}
 import chisel3._
 import freechips.rocketchip.diplomacy.{DisableMonitors, LazyModule, LazyModuleImp}
 import org.chipsalliance.cde.config.{Config, Parameters}
 import testchipip.tsi.SimTSI
 class SimDUT(implicit p: Parameters) extends LazyModule {
-  val ce     = LazyModule(new CERISCV()(new Config(new CEConfig())))
-  val mem    = LazyModule(new SimMemory)
+
+  val ce  = LazyModule(new CERISCV)
+  val mem = LazyModule(new SimMemory)
 
   DisableMonitors { implicit p: Parameters =>
-    mem.mbus.node  := ce.cetile.masterNode
+    mem.mbus.node := ce.cetile.masterNode
   }
   lazy val module = new SimDUTImp(this)
 }
@@ -34,7 +35,7 @@ class TestHarness(dut: => TestHarnessShell) extends Module {
 }
 
 class DUT extends Module with TestHarnessShell {
-  val ldut = LazyModule(new SimDUT()(Parameters.empty))
+  val ldut = LazyModule(new SimDUT()(new Config(new RV32Config)))
   val dut  = Module(ldut.module)
   io.success := dut.io.success
 }
