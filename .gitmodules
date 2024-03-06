@@ -1,0 +1,3 @@
+[submodule "src/main/resources/baremetal/rocc-software"]
+	path = src/main/resources/baremetal/rocc-software
+	url = https://github.com/ibm/rocc-software
