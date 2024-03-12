@@ -16,7 +16,7 @@ start:
 
     RVTEST_CODE_BEGIN
 
-    jal zero, _enter;
+    jal zero, _setup_sp_gp;
 
 data:
 .data 

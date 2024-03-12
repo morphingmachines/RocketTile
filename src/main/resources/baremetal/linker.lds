@@ -204,7 +204,6 @@ SECTIONS
      * everything that's been allocated into the ITIM/LIM already
      */
 
-    .text 0x80000000 : { rocc_start.o(.text.init._start)} > rom
 
     .text : {
         *(.text.unlikely .text.unlikely.*)

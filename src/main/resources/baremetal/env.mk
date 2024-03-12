@@ -3,18 +3,43 @@
 #ifndef VERBOSE
 #.SILENT:
 #endif
+XLEN ?= 32
+RISCV_PREFIX ?= riscv64-unknown-elf
+RISCV_GCC ?= riscv64-unknown-elf-gcc
 
-#TODO: use absolute paths of the clang and riscv-gcc
-#CC = $(REDEFINE_LLVMPATH)/clang
-CC = riscv64-unknown-elf-gcc
+CFLAGS_RV64=-mabi=lp64 -march=rv64imac
+CFLAGS_RV32=-mabi=ilp32 -march=rv32imc
 
-#TODO:-fno-builtin-memset may make code unsafe
+CC = $(RISCV_GCC)
+
 CFLAGS = -ffunction-sections -fdata-sections -Wuninitialized -fno-builtin -ffreestanding  -static -mcmodel=medany
-#CFLAGS += -fno-addrsig
-#CFLAGS += -march=rv32imf
+CFLAGS += -I${RISCV}/$(RISCV_PREFIX)/include
+
+
 CFLAGS += -O3
-LCC = riscv64-unknown-elf-ld
-#LCC = $(REDEFINE_LLVMPATH)/ld.lld
 #--print-gc-sections : prints removed sections
-#LDFLAGS = -nostdlib -nostartfiles -nodefaultlibs -Wl,-gc-sections -Wl,-print-gc-sections -L$(REDEFINE_LIB)/ldscript -T$(LINKFILE) -O3
-LDFLAGS = -gc-sections -print-gc-sections  -T$(LINKFILE) -O3
+LDFLAGS = -nostdlib -nostartfiles -nodefaultlibs -Wl,-gc-sections -Wl,-print-gc-sections -Wl,-Map=$(OUTNAME).map -L$(RISCV)/$(RISCV_PREFIX)/lib -T$(LINKFILE) -O3
+
+
+ifeq ($(XLEN), 64)
+	CFLAGS += $(CFLAGS_RV64)
+	LDFLAGS += $(CFLAGS_RV64)
+else
+	CFLAGS += $(CFLAGS_RV32)
+	LDFLAGS += $(CFLAGS_RV32)
+endif
+
+check-build:
+ifndef RISCV
+	$(error RISCV must be set to rocket-tools (https://github.com/chipsalliance/rocket-tools) installation path.)
+endif
+
+ifndef RISCV_TESTS_SRC
+	$(error RISCV_TESTS_SRC must be set to riscv-tests (rocket-tools submodule) source directory.)
+endif
+
+ifeq ($(XLEN), 32)
+	make $(OUTNAME).elf
+else
+	make $(OUTNAME).elf XLEN=64
+endif

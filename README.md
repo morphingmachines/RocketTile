@@ -1,13 +1,14 @@
 RocketTile
 =======================
-An simple instance of a RockeTile from the Rocket-Chip generator.
+A simple instance of a RockeTile with an example RoCC accelerator.
+
 This project uses [playground](https://github.com/morphingmachines/playground.git) as a library. `playground` and this project directories should be at the same level, as shown below.  
 ```
   workspace
   |-- playground
   |-- RocketTile
 ```
-Make sure that you have a working [playground](https://github.com/morphingmachines/playground.git) project before proceeding further. And donot rename/modify `playground` directory structure.
+Make sure that you have a working [playground](https://github.com/morphingmachines/playground.git) project before proceeding further. Do not rename/modify `playground` directory structure.
 
 ## Generating Verilog
 
