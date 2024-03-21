@@ -1,9 +1,7 @@
 package ce
 
 import circt.stage.ChiselStage
-import freechips.rocketchip.diplomacy.{LazyModule, ValName}
-import freechips.rocketchip.tile.TileVisibilityNodeKey
-import freechips.rocketchip.tilelink.TLEphemeralNode
+import freechips.rocketchip.diplomacy.LazyModule
 import freechips.rocketchip.util.ElaborationArtefacts
 
 import java.io._
@@ -152,6 +150,9 @@ object ceMain extends App with LazyToplevel {
     case "Sim" => LazyModule(new ce.sim.SimMemory()(new Config(new RV32Config)))
     case "DUT" => LazyModule(new ce.sim.SimDUT()(new Config(new RV32Config)))
     case "RoCCIO" => {
+      import freechips.rocketchip.tile.TileVisibilityNodeKey
+      import freechips.rocketchip.tilelink.TLEphemeralNode
+      import freechips.rocketchip.diplomacy.ValName
       val p: Parameters =
         (new Config(new RV32Config)).alterMap(Map(TileVisibilityNodeKey -> TLEphemeralNode()(ValName("tile_master"))))
       LazyModule(new RoCCIOBridge()(p))

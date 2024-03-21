@@ -16,7 +16,7 @@ test:## Run Chisel tests
 
 .PHONY: verilate 
 verilate: check-env ## Generate Verilator simulation executable
-	$(MILL) $(project).runMain $(project).TestLazyMain RV32RoCC 
+	$(MILL) $(project).runMain $(project).TestLazyMain RV32
 
 .PHONY: lint
 lint: ## Formats code using scalafmt and scalafix

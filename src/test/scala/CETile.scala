@@ -4,7 +4,7 @@ import chisel3._
 import chiseltest._
 import chiseltest.simulator.{SimulatorAnnotation, WriteWaveformAnnotation}
 import freechips.rocketchip.diplomacy.LazyModule
-import org.chipsalliance.cde.config.Parameters
+import org.chipsalliance.cde.config.Config
 import org.scalatest.freespec.AnyFreeSpec
 
 import scala.util.control.Breaks._
@@ -16,7 +16,7 @@ class CeTileTests extends AnyFreeSpec with ChiselScalatestTester {
   private def name         = DefaultBackend.getSimulator.name
 
   s"my dumy test with $name" in {
-    test(LazyModule(new sim.SimDUT()(Parameters.empty)).module).withAnnotations(DefaultAnnos) { c =>
+    test(LazyModule(new ce.sim.SimDUT()(new Config(new RV32Config))).module).withAnnotations(DefaultAnnos) { c =>
       c.reset.poke(true.B)
       c.clock.step(8)
       c.reset.poke(false.B)
