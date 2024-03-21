@@ -127,7 +127,6 @@ trait ScalacOptions extends ScalaModule {
   }
 }
 
-// Replace "gcd" with your %PROJECT-NAME%
 object ce
   extends ^.playground.build.CommonModule
   with SbtModule

@@ -1,6 +1,6 @@
 
 #include <stdint.h>
-#include "test_rocc.h"
+#include "exit_syscall.h"
 #include "include/accumulator.h"
 
 void assert(int cond, int v)

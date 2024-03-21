@@ -2,14 +2,14 @@
 
 OUTNAME := $(notdir $(shell pwd))
 
--include ./env.mk
+-include ./../env.mk
 
-CPPFLAGS += -Wall -I./
-commonObjs = bare_main.o rocc_start.o startup.o
+CPPFLAGS += -Wall -I./../
+commonObjs = bare_main.o start.o startup.o
 
 #LDFLAGS += -pg
 
-LINKFILE = linker.lds
+LINKFILE = ../linker.lds
 objects = $(commonObjs)
 	
 $(OUTNAME).elf : $(objects)
@@ -19,11 +19,14 @@ $(OUTNAME).elf : $(objects)
 %.o : %.c
 	$(CC) -ffp-contract=fast $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
-rocc_start.o: rocc_start.S
+bare_main.o : bare_main.c
+
+start.o: ../start.S
 	$(CC) $(CFLAGS) -I$(RISCV_TESTS_SRC)/env/p -c -o $@ $<
 
-bare_main.o : bare_main.c
-startup.o : startup.c
+startup.o : ../startup.c
+	$(CC) -ffp-contract=fast $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+
 
 .PHONY : clean
 clean : 

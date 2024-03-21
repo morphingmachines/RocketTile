@@ -1,3 +1,10 @@
+/* Useful references
+ * https://www.sifive.com/blog/all-aboard-part-3-linker-relaxation-in-riscv-toolchain
+ * https://twilco.github.io/riscv-from-scratch/2019/04/27/riscv-from-scratch-2.html
+ * https://www.five-embeddev.com/articles/2021/05/03/riscv-and-modern-c++-part1-3/
+ */
+
+
 #include <stdint.h>
 // #include <string.h>
 
