@@ -89,7 +89,7 @@ trait VerilateTestHarness { this: Toplevel =>
   }
 
   def CFLAGS(extra_flags: Seq[String]): Seq[String] = {
-    val default = Seq("-std=c++11", "-DVERILATOR", s"-I${spike_install_path}/include")
+    val default = Seq("-std=c++14", "-DVERILATOR", s"-I${spike_install_path}/include")
     val opts    = default ++ extra_flags
     opts.map(i => Seq("-CFLAGS", i)).flatten
   }
@@ -106,7 +106,7 @@ trait VerilateTestHarness { this: Toplevel =>
     extras_src:    Seq[String] = Seq(),
   ) = {
     val cmd =
-      Seq("verilator", "-Wno-LATCH", "-Wno-WIDTH", "--cc", "-CFLAGS", "-std=c++11") ++ CFLAGS(extra_CFLAGS) ++ LDFLAGS(
+      Seq("verilator", "-Wno-LATCH", "-Wno-WIDTH", "--cc") ++ CFLAGS(extra_CFLAGS) ++ LDFLAGS(
         extra_LDFLAGS,
       ) ++
         extras_src ++ extra_rtl_src ++
@@ -120,11 +120,13 @@ trait VerilateTestHarness { this: Toplevel =>
           "--exe",
           s"${os.pwd.toString()}/src/main/resources/test_tb_top.cpp",
         )
+    println(s"LOG: command invoked \"${cmd.mkString(" ")}\"")
     os.proc(cmd).call(cwd = os.Path(s"${os.pwd.toString()}/${out_dir}"), stdout = os.Inherit)
   }
 
   def build() = {
     val cmd = Seq("make", "-j", "-C", "obj_dir/", "-f", s"VTestHarness.mk")
+    println(s"LOG: command invoked \"${cmd.mkString(" ")}\"")
     os.proc(cmd).call(cwd = os.Path(s"${os.pwd.toString()}/${out_dir}"), stdout = os.Inherit)
     println(s"VTestHarness executable in ./generated_sv_dir/${topModule_name}/obj_dir directory.")
     println(s"Run simulation using: ./VTestHarness <rv32IMA>.elf")
