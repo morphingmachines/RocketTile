@@ -9,6 +9,10 @@ This project uses [playground](https://github.com/morphingmachines/playground.gi
   |-- RocketTile
 ```
 Make sure that you have a working [playground](https://github.com/morphingmachines/playground.git) project before proceeding further. Do not rename/modify `playground` directory structure.
+## Clone the code
+```sh
+git clone --recursive git@github.com:morphingmachines/RocketTile.git
+```
 
 ## Generating Verilog
 
@@ -31,7 +35,16 @@ Simulator executable can be generated using the `verilate` Makefile target.
 make verilate
 ```
 
+This will generate an executable `generated_sv_dir/ce.sim.SimDUT/obj_dir/VTestHarness` that can take an `elf` file and generate instruction trace.
+
 More targets can be listed by running `make`
 
+## Sanity check with bare-metal Examples
 
+`src/main/resources/baremetal` includes examples programs (`vecAdd`, `rocc-example`, `assembly-example`) that can be used to run the simulation. `RISCV_TESTS_SRC` environment variable must be set to [riscv-tests](https://github.com/riscv-software-src/riscv-tests.git) path, required for `riscv_test.h` file.
 
+#### Run `vecAdd` program on the simulator
+```sh
+cd src/main/resources/baremetal/vecAdd
+make run
+```
