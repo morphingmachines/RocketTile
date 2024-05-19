@@ -39,9 +39,15 @@ This will generate an executable `generated_sv_dir/ce.sim.SimDUT/obj_dir/VTestHa
 
 More targets can be listed by running `make`
 
+<<<<<<< HEAD
 ## Sanity check with bare-metal Examples
 
 `src/main/resources/baremetal` includes examples programs (`vecAdd`, `rocc-example`, `assembly-example`) that can be used to run the simulation. `RISCV_TESTS_SRC` environment variable must be set to [riscv-tests](https://github.com/riscv-software-src/riscv-tests.git) path, required for `riscv_test.h` file.
+=======
+## Bare-metal Examples
+
+`src/main/resources/baremetal` includes examples programs that can be used to run the simulation. `RISCV_TESTS_SRC` environment variable must be set to [riscv-tests](https://github.com/riscv-software-src/riscv-tests.git) path, required for `riscv_test.h` file.
+>>>>>>> origin/master
 
 #### Run `vecAdd` program on the simulator
 ```sh
