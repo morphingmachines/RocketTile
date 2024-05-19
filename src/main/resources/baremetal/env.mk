@@ -6,6 +6,7 @@
 XLEN ?= 32
 RISCV_PREFIX ?= riscv64-unknown-elf
 RISCV_GCC ?= riscv64-unknown-elf-gcc
+TOP_LAZY_MODULE_CONFIG ?= ce.sim.SimDUT
 
 CFLAGS_RV64=-mabi=lp64 -march=rv64imac
 CFLAGS_RV32=-mabi=ilp32 -march=rv32imc
@@ -19,6 +20,8 @@ CFLAGS += -I${RISCV}/$(RISCV_PREFIX)/include
 CFLAGS += -O3
 #--print-gc-sections : prints removed sections
 LDFLAGS = -nostdlib -nostartfiles -nodefaultlibs -Wl,-gc-sections -Wl,-print-gc-sections -Wl,-Map=$(OUTNAME).map -L$(RISCV)/$(RISCV_PREFIX)/lib -T$(LINKFILE) -O3
+
+SUFFIX_RELATIVE_VERILATED_SIM_EXE = ../../../../generated_sv_dir/$(TOP_LAZY_MODULE_CONFIG)/obj_dir/VTestHarness
 
 
 ifeq ($(XLEN), 64)
@@ -43,3 +46,6 @@ ifeq ($(XLEN), 32)
 else
 	make $(OUTNAME).elf XLEN=64
 endif
+
+run: $(OUTNAME).elf
+	$(RELATIVE_VERILATED_SIM_EXE) $< 2>&1 | spike-dasm

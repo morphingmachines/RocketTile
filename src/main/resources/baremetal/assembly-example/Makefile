@@ -4,6 +4,9 @@ OUTNAME := $(notdir $(shell pwd))
 
 -include ./../env.mk
 
+TOP_LAZY_MODULE_CONFIG = ce.sim.SimDUT
+RELATIVE_VERILATED_SIM_EXE = ./../$(SUFFIX_RELATIVE_VERILATED_SIM_EXE)
+
 CPPFLAGS += -Wall -I./../
 commonObjs = riscv_rand_instr_test_0.o startup.o
 
@@ -14,6 +17,7 @@ objects = $(commonObjs)
 	
 $(OUTNAME).elf : $(objects)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS) 
+
 
 # "-ffp-contract=fast" compiler flag to use fmadd for fmul follwed by fadd
 %.o : %.c

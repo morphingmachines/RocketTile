@@ -4,7 +4,10 @@ OUTNAME := $(notdir $(shell pwd))
 
 -include ./../env.mk
 
-CPPFLAGS += -Wall -I./../
+TOP_LAZY_MODULE_CONFIG = ce.sim.SimDUT
+RELATIVE_VERILATED_SIM_EXE = ./../$(SUFFIX_RELATIVE_VERILATED_SIM_EXE)
+
+CPPFLAGS += -D__XLEN__=$(XLEN) -Wall -I./../
 commonObjs = bare_main.o rocc_start.o startup.o
 
 #LDFLAGS += -pg
