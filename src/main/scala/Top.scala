@@ -129,7 +129,7 @@ trait VerilateTestHarness { this: Toplevel =>
     println(s"LOG: command invoked \"${cmd.mkString(" ")}\"")
     os.proc(cmd).call(cwd = os.Path(s"${os.pwd.toString()}/${out_dir}"), stdout = os.Inherit)
     println(s"VTestHarness executable in ./generated_sv_dir/${topModule_name}/obj_dir directory.")
-    println(s"Run simulation using: ./VTestHarness <rv32IMA>.elf")
+    println(s"Run simulation using: ./VTestHarness <foo.elf")
   }
 }
 
@@ -175,6 +175,7 @@ object TestLazyMain extends App with LazyToplevel with VerilateTestHarness with 
   val str = if (args.length == 0) "" else args(0)
   lazy val lazyTop = str match {
     case "RV32"     => LazyModule(new ce.sim.SimDUT()(new Config(new RV32Config)))
+    case "RV64"     => LazyModule(new ce.sim.SimDUT()(new Config(new RV64Config)))
     case "RV32RoCC" => LazyModule(new ce.sim.SimDUT()(new Config(new RV32WithRoCCAccConfig)))
     case "RV64RoCC" => LazyModule(new ce.sim.SimDUT()(new Config(new RV64WithRoCCAccConfig)))
     case _          => throw new Exception("Unknown Module Name!")

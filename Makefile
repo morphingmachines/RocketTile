@@ -1,6 +1,8 @@
 # Replace 'gcd' with your %PROJECT-NAME%
 project = ce
 
+TARGET ?= RV32
+
 # Toolchains and tools
 MILL = ./mill
 
@@ -15,8 +17,8 @@ test:## Run Chisel tests
 	@echo "If using WriteVcdAnnotation in your tests, the VCD files are generated in ./test_run_dir/testname directories."
 
 .PHONY: verilate 
-verilate: check-env ## Generate Verilator simulation executable
-	$(MILL) $(project).runMain $(project).TestLazyMain RV32
+verilate: check-env ## Generate Verilator simulation executable for  TARGET = RV32 (default) or RV64 or RV32RoCC or RV64RoCC 
+	$(MILL) $(project).runMain $(project).TestLazyMain $(TARGET)
 
 .PHONY: lint
 lint: ## Formats code using scalafmt and scalafix
