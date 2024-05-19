@@ -14,7 +14,8 @@ void assert(int cond, int v)
 void bare_main(void)
 {
 
-  volatile uint64_t data[] = {0xdead, 0xbeef, 0x0bad, 0xf00d}, y;
+  volatile uint32_t data[] = {0xdead, 0xbeef, 0x0bad, 0xf00d};
+  uint32_t y;
 
   uint16_t addr = 1;
   doWrite(y, addr, data[0]);
@@ -22,7 +23,7 @@ void bare_main(void)
   doRead(y, addr);
   assert(y == data[0], 1);
 
-  uint64_t data_accum = -data[0] + data[1];
+  uint32_t data_accum = -data[0] + data[1];
   doAccum(y, addr, data_accum);
   assert(y == data[0], 2);
 
