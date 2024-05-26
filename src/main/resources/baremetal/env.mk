@@ -4,11 +4,11 @@
 #.SILENT:
 #endif
 XLEN ?= 32
-RISCV_PREFIX ?= riscv64-unknown-elf
-RISCV_GCC ?= riscv64-unknown-elf-gcc
+RISCV_PREFIX ?= riscv$(XLEN)-unknown-elf
+RISCV_GCC ?= $(RISCV_PREFIX)-gcc
 TOP_LAZY_MODULE_CONFIG ?= ce.sim.SimDUT
 
-CFLAGS_RV64=-mabi=lp64 -march=rv64imac
+CFLAGS_RV64=-mabi=lp64 -march=rv64imc
 CFLAGS_RV32=-mabi=ilp32 -march=rv32imc
 
 CC = $(RISCV_GCC)
