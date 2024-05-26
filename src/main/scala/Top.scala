@@ -36,7 +36,6 @@ trait Toplevel {
       s"${out_dir}.fir",
       "--disable-annotation-unknown",
       "--split-verilog",
-      "--disable-all-randomization",
       s"-o=${out_dir}",
       s"--output-annotation-file=${out_dir}/${topModule_name}.anno.json",
     ).call(stdout = os.Inherit) // check additional options with "firtool --help"
@@ -89,7 +88,7 @@ trait VerilateTestHarness { this: Toplevel =>
   }
 
   def CFLAGS(extra_flags: Seq[String]): Seq[String] = {
-    val default = Seq("-std=c++14", "-DVERILATOR", s"-I${spike_install_path}/include")
+    val default = Seq("-std=c++17", "-DVERILATOR", s"-I${spike_install_path}/include")
     val opts    = default ++ extra_flags
     opts.map(i => Seq("-CFLAGS", i)).flatten
   }
