@@ -19,13 +19,13 @@ Add `$VERILATOR_ROOT/bin` to `PATH` environment variable.
 
 Rocket-tools
 ==============================
-To run bare-metal examples on the RTL simulator, we need the following software-tools 
+We need the following software tools to run bare-metal examples on the RTL simulator. 
 * [RISC-V GNU Cross Compiler](https://github.com/riscv-collab/riscv-gnu-toolchain.git)
 * Front-End Server (FESVR), a C++ library that manages communication between a host machine and a RISC-V DUT, that is part of the [spike](https://github.com/riscv-software-src/riscv-isa-sim.git) build.
-* [RISC-V Tests](https://github.com/riscv-software-src/riscv-tests.git)
-This builds the RISC-V GNU cross compiler and ISA simulator from sources.
+* [riscv-tests](https://github.com/riscv-software-src/riscv-tests.git), required for the start-up code for the baremetal environment.
 
-For the pre-requisite list of OS specific packages refer to this [link](https://github.com/chipsalliance/rocket-tools/blob/ca6dc52742914ab5f9b7fd1444fa0ffbae9aa631/README.md?plain=1#L29-L36)
+
+For the pre-requisite list of OS-specific packages, refer to this [link](https://github.com/chipsalliance/rocket-tools/blob/ca6dc52742914ab5f9b7fd1444fa0ffbae9aa631/README.md?plain=1#L29-L36)
 
 Follow the steps to install the required software tools.
 
@@ -53,7 +53,7 @@ make -j$(nproc)
 make install
 ```
 
-* Install RISC-V GNU cross compiler with newlib from sources. This take some time.
+* Install RISC-V GNU cross compiler with newlib from sources. This takes some time.
 ```sh
 git submodule update --recursive --init riscv-gnu-toolchain
 cd riscv-gnu-toolchain
