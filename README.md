@@ -26,22 +26,23 @@ The output verilog files are generated in the `./generated_sv_dir` directory. Th
 
 ![diplomacy_graph](./doc/figures/SimDUT.jpg)
 ## Simulator
+To run simulations, you need to install the following [dependencies](./doc/dependencies.md)
 
- We assume [Spike RISCV-V ISA Simulator](https://github.com/riscv-software-src/riscv-isa-sim) is installed and `RISCV` environment variable is set to the Spike install path. The test bench setup uses Front-End Server (FESVR), a C++ library that manages communication between a host machine and a RISC-V DUT, which is part of the [Spike](https://github.com/riscv-software-src/riscv-isa-sim) build.
+ We assume [Spike RISC-V ISA Simulator](https://github.com/riscv-software-src/riscv-isa-sim) is installed and `RISC-V` environment variable is set to the Spike install path. The test bench setup uses Front-End Server (FESVR), a C++ library that manages communication between a host machine and a RISC-V DUT, which is part of the [Spike](https://github.com/riscv-software-src/riscv-isa-sim) build.
 
-Simulator executable can be generated using the `verilate` Makefile target.
+* The simulator executable can be generated using `make verilate`.
 
 ```sh
 make verilate
 ```
 
-This will generate an executable `generated_sv_dir/ce.sim.SimDUT/obj_dir/VTestHarness` that can take an `elf` file and generate instruction trace.
+This will generate an executable `generated_sv_dir/ce.sim.SimDUT/obj_dir/VTestHarness`, that can take an `elf` file and generate an instruction execution trace.
 
 More targets can be listed by running `make`
 
-## Sanity check with bare-metal Examples
+## Sanity check with bare-metal examples
 
-`src/main/resources/baremetal` includes examples programs (`vecAdd`, `rocc-example`, `assembly-example`) that can be used to run the simulation. `RISCV_TESTS_SRC` environment variable must be set to [riscv-tests](https://github.com/riscv-software-src/riscv-tests.git) path, required for `riscv_test.h` file.
+`src/main/resources/baremetal` includes example programs (`vecAdd`, `rocc-example`, `assembly-example`) that can be used to run the simulation. `RISCV_TESTS_SRC` environment variable must be set to [riscv-tests](https://github.com/riscv-software-src/riscv-tests.git) path, required for `riscv_test.h` file.
 
 #### Run `vecAdd` program on the simulator
 ```sh
