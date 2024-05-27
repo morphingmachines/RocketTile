@@ -12,7 +12,7 @@ git tag                     # See what versions exit
 
 autoconf # create ./configure script
 
-export VERILATOR_ROOT=`pwd`/build
+export VERILATOR_ROOT=`pwd`
 ./configure
 make -j$(nproc)
 ```
