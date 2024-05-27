@@ -14,6 +14,7 @@ autoconf # create ./configure script
 
 export VERILATOR_ROOT=`pwd`/build
 ./configure
+make -j$(nproc)
 ```
 Add `$VERILATOR_ROOT/bin` to `PATH` environment variable.
 
