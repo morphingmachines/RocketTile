@@ -5,8 +5,15 @@ import freechips.rocketchip.devices.tilelink.{BootROMParams, CLINT, CLINTParams,
 import freechips.rocketchip.diplomacy.{AddressSet, BufferParams, DisableMonitors, LazyModule, LazyModuleImp}
 import freechips.rocketchip.interrupts.{IntSinkNode, IntSinkParameters, IntSinkPortParameters}
 import freechips.rocketchip.subsystem.CacheBlockBytes
-import freechips.rocketchip.tilelink.{TLBroadcast, TLBuffer, TLFIFOFixer, TLRAM, TLXbar}
+import freechips.rocketchip.tile.XLen
+import freechips.rocketchip.tilelink.{EarlyAck, TLBuffer, TLCacheCork, TLFragmenter, TLRAM, TLWidthWidget, TLXbar}
 import org.chipsalliance.cde.config.Parameters
+import sifive.blocks.inclusivecache.{
+  CacheParameters,
+  InclusiveCache,
+  InclusiveCacheMicroParameters,
+  InclusiveCachePortParameters,
+}
 import testchipip.tsi._
 
 class SimMemory(implicit p: Parameters) extends LazyModule {
@@ -24,22 +31,46 @@ class SimMemory(implicit p: Parameters) extends LazyModule {
     ),
   )
 
-  val clint   = LazyModule(new CLINT(params = CLINTParams(), beatBytes = p(CacheBlockBytes)))
+  val clint   = LazyModule(new CLINT(params = CLINTParams(), beatBytes = p(XLen) / 8))
   val intSink = IntSinkNode(Seq(IntSinkPortParameters(Seq(IntSinkParameters()))))
 
-  val tlram       = LazyModule(new TLRAM(address = new AddressSet(0x80000000L, 0x3fffff), beatBytes = p(CacheBlockBytes)))
-  val tlBroadcast = LazyModule(new TLBroadcast(lineBytes = p(CacheBlockBytes), numTrackers = 1))
+  val tlram = LazyModule(new TLRAM(address = new AddressSet(0x80000000L, 0x3fffff), beatBytes = p(CacheBlockBytes)))
+
+  val l2CacheParams = CacheParameters(
+    level = 2,
+    ways = 2,
+    sets = 64,
+    blockBytes = p(CacheBlockBytes),
+    beatBytes = p(CacheBlockBytes),
+    hintsSkipProbe = false,
+  )
+  val l2MicroParams = InclusiveCacheMicroParameters(
+    writeBytes = 4,
+    portFactor = 2,
+    memCycles = 8,
+    innerBuf = InclusiveCachePortParameters.fullC,
+    outerBuf = InclusiveCachePortParameters.full,
+  )
+  val l2cache       = LazyModule(new InclusiveCache(l2CacheParams, l2MicroParams))
+  val cork          = LazyModule(new TLCacheCork)
+  val lastLevelNode = cork.node
+
+  // val tlBroadcast = LazyModule(new TLBroadcast(lineBytes = p(CacheBlockBytes), numTrackers = 1))
 
   val mbus   = LazyModule(new TLXbar)
-  val rambus = LazyModule(new TLXbar)
   val tsi2tl = LazyModule(new TSIToTileLink)
 
-  val iobus = LazyModule(new TLXbar)
   intSink := clint.intnode
   DisableMonitors { implicit p =>
-    clint.node := iobus.node  := TLFIFOFixer(TLFIFOFixer.all)            := TLBuffer(BufferParams(1, false, false)) := mbus.node
-    tlrom.node := rambus.node
-    tlram.node := rambus.node := TLBuffer(BufferParams(2, false, false)) := tlBroadcast.node                        := mbus.node
+    clint.node := TLBuffer(BufferParams(1, false, false)) := TLFragmenter(
+      p(XLen) / 8,
+      32,
+      true,
+      EarlyAck.AllPuts,
+      true,
+    )          := TLWidthWidget(p(CacheBlockBytes))       := mbus.node
+    tlrom.node := TLBuffer(BufferParams(1, false, false)) := mbus.node
+    tlram.node := lastLevelNode                           := l2cache.node := mbus.node
     mbus.node  := tsi2tl.node
   }
 

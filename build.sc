@@ -135,7 +135,7 @@ object ce
   with ScalacOptions { m =>
   override def millSourcePath = os.pwd
 
-  override def moduleDeps = super.moduleDeps ++ Seq(myrocketchip, testchipip)
+  override def moduleDeps = super.moduleDeps ++ Seq(myrocketchip, testchipip, inclusivecache)
 
   object test extends SbtModuleTests with ScalaTest with ScalafmtModule with ScalafixModule {
     override def ivyDeps = super.ivyDeps() ++ Agg(
