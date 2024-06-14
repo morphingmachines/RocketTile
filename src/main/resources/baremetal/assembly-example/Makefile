@@ -10,6 +10,8 @@ RELATIVE_VERILATED_SIM_EXE = ./../$(SUFFIX_RELATIVE_VERILATED_SIM_EXE)
 CPPFLAGS += -Wall -I./../
 commonObjs = riscv_rand_instr_test_0.o startup.o
 
+
+
 #LDFLAGS += -pg
 
 LINKFILE = link.ld
@@ -25,6 +27,9 @@ $(OUTNAME).elf : $(objects)
 
 
 riscv_rand_instr_test_0.o: riscv_rand_instr_test_0.S
+ifeq ($(XLEN), 64)
+	$(error The assembly source, riscv_rand_instr_test_0.S, is RV32.)
+endif
 	$(CC) $(CFLAGS) -I$(RISCV_TESTS_SRC)/env/p -c -o $@ $<
 
 startup.o : ../startup.c
