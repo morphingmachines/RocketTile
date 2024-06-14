@@ -2,7 +2,7 @@ package ce
 
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.rocket.{DCacheParams, ICacheParams, MulDivParams, PgLevels, RocketCoreParams}
-import freechips.rocketchip.subsystem.CacheBlockBytes
+import freechips.rocketchip.subsystem.{CacheBlockBytes, WithInclusiveCache, WithoutTLMonitors}
 import freechips.rocketchip.tile.{
   AccumulatorExample,
   BuildRoCC,
@@ -79,7 +79,19 @@ class WithBootROMFile
     }
   })
 
+case object InsertL2Cache extends Field[Boolean](false)
+
+class WithL2Cache
+  extends Config((_, _, _) => { case InsertL2Cache =>
+    true
+  })
+
 class RV32Config            extends Config(new WithBootROMFile ++ (new CEConfig))
 class RV32WithRoCCAccConfig extends Config(new WithAccumulatorRoCCExample ++ new RV32Config)
 class RV64Config            extends Config((new RV32Config).alterMap(Map((XLen, 64))))
 class RV64WithRoCCAccConfig extends Config(new WithAccumulatorRoCCExample ++ new RV64Config)
+
+class RV32WithL2 extends Config(new RV32Config ++ new WithL2Cache)
+class RV64WithL2 extends Config(new RV64Config ++ new WithL2Cache)
+
+class RV32WithNoTLMonitors extends Config(new RV32Config ++ new WithoutTLMonitors ++ new WithInclusiveCache)

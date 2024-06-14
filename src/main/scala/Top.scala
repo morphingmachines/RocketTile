@@ -147,9 +147,9 @@ object ceMain extends App with LazyToplevel {
   import org.chipsalliance.cde.config.{Parameters, Config}
   val str = if (args.length == 0) "" else args(0)
   val lazyTop = str match {
-    case "CE"  => LazyModule(new ce.CeTop()(new Config(new RV32Config)))
-    case "Sim" => LazyModule(new ce.sim.SimMemory()(new Config(new RV32Config)))
-    case "DUT" => LazyModule(new ce.sim.SimDUT()(new Config(new RV32Config)))
+    case "CE"     => LazyModule(new ce.CeTop()(new Config(new RV32Config)))
+    case "Uncore" => LazyModule(new ce.Uncore()(new Config(new RV32Config)))
+    case "DUT"    => LazyModule(new ce.sim.SimDUT()(new Config(new RV32Config)))
     case "RoCCIO" => {
       import freechips.rocketchip.tile.TileVisibilityNodeKey
       import freechips.rocketchip.tilelink.TLEphemeralNode

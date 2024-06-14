@@ -1,18 +1,26 @@
 package ce.sim
 
-import ce.{CERISCV, RV32Config}
+import ce.{CERISCV, RV32Config, _}
 import chisel3._
-import freechips.rocketchip.diplomacy.{DisableMonitors, LazyModule, LazyModuleImp}
+import freechips.rocketchip.diplomacy.{AddressSet, LazyModule, LazyModuleImp}
+import freechips.rocketchip.subsystem.CacheBlockBytes
+import freechips.rocketchip.tilelink.TLRAM
 import org.chipsalliance.cde.config.{Config, Parameters}
 import testchipip.tsi.SimTSI
 class SimDUT(implicit p: Parameters) extends LazyModule {
 
-  val ce  = LazyModule(new CERISCV)
-  val mem = LazyModule(new SimMemory)
+  val ce    = LazyModule(new CERISCV)
+  val tlram = LazyModule(new TLRAM(address = new AddressSet(0x80000000L, 0x3fffff), beatBytes = p(CacheBlockBytes)))
 
-  DisableMonitors { implicit p: Parameters =>
-    mem.mbus.node := ce.cetile.masterNode
+  val uncore = if (p(InsertL2Cache)) {
+    LazyModule(new Uncore with HasL2Cache)
+  } else {
+    LazyModule(new Uncore with HasNoL2Cache)
   }
+
+  uncore.mbus.node := ce.cetile.masterNode
+  tlram.node       := uncore.memoryNode
+
   lazy val module = new SimDUTImp(this)
 }
 
@@ -20,8 +28,8 @@ class SimDUTImp(outer: SimDUT) extends LazyModuleImp(outer) with TestHarnessShel
   outer.ce.module.interrupts           := DontCare
   outer.ce.hartIdIO                    := DontCare
   outer.ce.bootROMResetVectorAddressIO := 0x10040.U
-  io.success                           := SimTSI.connect(Some(outer.mem.module.io.tsi), clock, reset)
-  outer.ce.module.interrupts.msip      := outer.mem.module.io.msip
+  io.success                           := SimTSI.connect(Some(outer.uncore.module.io.tsi), clock, reset)
+  outer.ce.module.interrupts.msip      := outer.uncore.module.io.msip
 }
 
 trait TestHarnessShell extends Module {
