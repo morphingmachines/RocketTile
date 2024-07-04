@@ -1,7 +1,7 @@
 # Replace 'gcd' with your %PROJECT-NAME%
 project = ce
 
-TARGET ?= RV32
+TARGET ?= RV64
 
 # Toolchains and tools
 MILL = ./mill

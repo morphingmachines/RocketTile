@@ -174,7 +174,7 @@ object TestLazyMain extends App with LazyToplevel with VerilateTestHarness with 
   val str = if (args.length == 0) "" else args(0)
   lazy val lazyTop = str match {
     case "RV32"     => LazyModule(new ce.sim.SimDUT()(new Config(new RV32Config)))
-    case "RV64"     => LazyModule(new ce.sim.SimDUT()(new Config(new RV64Config)))
+    case "RV64"     => LazyModule(new ce.sim.SimDUT()(new Config(new RV64WithL2)))
     case "RV32RoCC" => LazyModule(new ce.sim.SimDUT()(new Config(new RV32WithRoCCAccConfig)))
     case "RV64RoCC" => LazyModule(new ce.sim.SimDUT()(new Config(new RV64WithRoCCAccConfig)))
     case _          => throw new Exception("Unknown Module Name!")
