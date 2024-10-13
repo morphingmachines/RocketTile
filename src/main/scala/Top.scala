@@ -6,6 +6,7 @@ import freechips.rocketchip.util.ElaborationArtefacts
 
 import java.io._
 import java.nio.file._
+import freechips.rocketchip.tile.OpcodeSet
 
 trait Toplevel {
   def topModule: chisel3.RawModule
@@ -150,6 +151,7 @@ object ceMain extends App with LazyToplevel {
     case "CE"     => LazyModule(new ce.CeTop()(new Config(new RV32Config)))
     case "Uncore" => LazyModule(new ce.Uncore()(new Config(new RV32Config)))
     case "DUT"    => LazyModule(new ce.sim.SimDUT()(new Config(new RV32Config)))
+    case "RV64RoCC" => LazyModule(new ce.sim.SimDUT()(new Config(new RV64WithRoCCAccConfig)))
     case "RoCCIO" => {
       import freechips.rocketchip.tile.TileVisibilityNodeKey
       import freechips.rocketchip.tilelink.TLEphemeralNode
@@ -158,8 +160,16 @@ object ceMain extends App with LazyToplevel {
         (new Config(new RV32Config)).alterMap(Map(TileVisibilityNodeKey -> TLEphemeralNode()(ValName("tile_master"))))
       LazyModule(new RoCCIOBridge()(p))
     }
-    case _ => LazyModule(new ce.CeTop()(new Config(new RV32Config)))
-    // case _    => throw new Exception("Unknown Module Name!")
+    case "AccumAccel" => {
+      import freechips.rocketchip.tile.TileVisibilityNodeKey
+      import freechips.rocketchip.tilelink.TLEphemeralNode
+      import freechips.rocketchip.diplomacy.ValName
+      val p: Parameters =
+        (new Config(new RV32Config)).alterMap(Map(TileVisibilityNodeKey -> TLEphemeralNode()(ValName("tile_master"))))
+      LazyModule(new AccumulatorWrapper(OpcodeSet.custom0)(p))  
+    }
+    //case _ => LazyModule(new ce.CeTop()(new Config(new RV32Config)))
+    case _    => throw new Exception("Unknown Module Name!")
   }
 
   showModuleComposition(lazyTop)

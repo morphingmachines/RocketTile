@@ -8,7 +8,7 @@ MILL = ./mill
 
 # Targets
 rtl:## Generates Verilog code from Chisel sources (output to ./generated_sv_dir)
-	$(MILL) $(project).runMain $(project).ceMain DUT
+	$(MILL) $(project).runMain $(project).ceMain $(TARGET)
 
 check: verilate
 .PHONY: test

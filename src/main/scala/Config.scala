@@ -4,7 +4,7 @@ import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.rocket.{DCacheParams, ICacheParams, MulDivParams, PgLevels, RocketCoreParams}
 import freechips.rocketchip.subsystem.{CacheBlockBytes, WithInclusiveCache, WithoutTLMonitors}
 import freechips.rocketchip.tile.{
-  AccumulatorExample,
+  //AccumulatorExample,
   BuildRoCC,
   MaxHartIdBits,
   OpcodeSet,
@@ -17,7 +17,7 @@ import org.chipsalliance.cde.config.{Config, Field, Parameters}
 class CEConfig
   extends Config((site, here, _) => {
     case XLen            => 32
-    case CacheBlockBytes => 32
+    case CacheBlockBytes => (site(XLen))
     case TileKey => {
       RocketTileParams(
         core = RocketCoreParams(
@@ -62,7 +62,8 @@ class WithAccumulatorRoCCExample
     case BuildRoCC => {
       // val otherRoccAcc = up(BuildRoCC)
       List { (p: Parameters) =>
-        val roccAcc = LazyModule(new AccumulatorExample(OpcodeSet.custom0)(p))
+        //val roccAcc = LazyModule(new AccumulatorExample(OpcodeSet.custom0)(p))
+        val roccAcc = LazyModule(new AccumulatorSuperModule(OpcodeSet.custom0)(p))
         roccAcc
       } // ++ otherRoccAcc
     }
