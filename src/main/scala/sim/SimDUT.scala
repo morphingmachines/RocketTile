@@ -30,6 +30,11 @@ class SimDUTImp(outer: SimDUT) extends LazyModuleImp(outer) with TestHarnessShel
   outer.ce.bootROMResetVectorAddressIO := 0x10040.U
   io.success                           := SimTSI.connect(Some(outer.uncore.module.io.tsi), clock, reset)
   outer.ce.module.interrupts.msip      := outer.uncore.module.io.msip
+
+  if (outer.p(InsertRoCCIO)) {
+    val accum = Module(new MyAccumulatorExampleModule)
+    outer.ce.module.roccIO.get <> accum.io
+  }
 }
 
 trait TestHarnessShell extends Module {

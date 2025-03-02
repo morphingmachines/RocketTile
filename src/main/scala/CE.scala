@@ -4,13 +4,17 @@ import chisel3._
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.interrupts._
 import freechips.rocketchip.subsystem.RocketCrossingParams
-import freechips.rocketchip.tile.{HartsWontDeduplicate, NMI, RocketTile, RocketTileParams, TileKey, TraceBundle}
+import freechips.rocketchip.tile.{HartsWontDeduplicate, NMI, RocketTileParams, TileKey, TraceBundle, XLen}
 import freechips.rocketchip.tilelink.{TLManagerNode, TLSlaveParameters, TLSlavePortParameters}
 import org.chipsalliance.cde.config.Parameters
 
 class CERISCV(implicit p: Parameters) extends LazyModule with BindingScope {
   val cetile = LazyModule(
-    new RocketTile(p(TileKey).asInstanceOf[RocketTileParams], RocketCrossingParams(), HartsWontDeduplicate(p(TileKey))),
+    new RocketTileWithRoCCIO(
+      p(TileKey).asInstanceOf[RocketTileParams],
+      RocketCrossingParams(),
+      HartsWontDeduplicate(p(TileKey)),
+    ),
   )
 
   val intSourcePortParams = IntSourcePortParameters(sources =
@@ -59,10 +63,21 @@ class CERISCVImp(outer: CERISCV) extends LazyModuleImp(outer) {
     val meip  = Input(Bool())
   })
 
+  override implicit val p: Parameters = outer.cetile.p
+  val xLen      = outer.p(XLen)
+  val addrWidth = outer.p(XLen)
+  val tagWidth  = 5
+  val roccIO    = if (p(InsertRoCCIO)) Some(IO(Flipped(new SimpleRoCCCoreIO(xLen, addrWidth, tagWidth)))) else None
+
+  if (p(InsertRoCCIO)) {
+    outer.cetile.module.roccifc.map(i => i <> roccIO.get)
+  }
+
   outer.intsrcnode.out(0)._1(0) := interrupts.debug
   outer.intsrcnode.out(0)._1(1) := interrupts.msip
   outer.intsrcnode.out(0)._1(2) := interrupts.mtip
   outer.intsrcnode.out(0)._1(3) := interrupts.meip
+
 }
 
 trait WithMemPortIO { this: CERISCV =>

@@ -40,7 +40,7 @@ class Uncore(implicit p: Parameters) extends LazyModule {
     ),
   )
 
-  val clint   = LazyModule(new CLINT(params = CLINTParams(), beatBytes = p(XLen)/8))
+  val clint   = LazyModule(new CLINT(params = CLINTParams(), beatBytes = p(XLen) / 8))
   val intSink = IntSinkNode(Seq(IntSinkPortParameters(Seq(IntSinkParameters()))))
 
   def skipMMIO(x: TLClientParameters) = {

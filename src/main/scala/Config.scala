@@ -4,7 +4,7 @@ import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.rocket.{DCacheParams, ICacheParams, MulDivParams, PgLevels, RocketCoreParams}
 import freechips.rocketchip.subsystem.{CacheBlockBytes, WithInclusiveCache, WithoutTLMonitors}
 import freechips.rocketchip.tile.{
-  //AccumulatorExample,
+  // AccumulatorExample,
   BuildRoCC,
   MaxHartIdBits,
   OpcodeSet,
@@ -14,10 +14,12 @@ import freechips.rocketchip.tile.{
 }
 import org.chipsalliance.cde.config.{Config, Field, Parameters}
 
+case object InsertRoCCIO extends Field[Boolean](false)
+
 class CEConfig
   extends Config((site, here, _) => {
     case XLen            => 32
-    case CacheBlockBytes => (site(XLen))
+    case CacheBlockBytes => site(XLen)
     case TileKey => {
       RocketTileParams(
         core = RocketCoreParams(
@@ -62,9 +64,21 @@ class WithAccumulatorRoCCExample
     case BuildRoCC => {
       // val otherRoccAcc = up(BuildRoCC)
       List { (p: Parameters) =>
-        //val roccAcc = LazyModule(new AccumulatorExample(OpcodeSet.custom0)(p))
+        // val roccAcc = LazyModule(new AccumulatorExample(OpcodeSet.custom0)(p))
         val roccAcc = LazyModule(new AccumulatorSuperModule(OpcodeSet.custom0)(p))
         roccAcc
+      } // ++ otherRoccAcc
+    }
+  })
+
+class WithRoCCBridge
+  extends Config((_, _, _) => {
+    case InsertRoCCIO => true
+    case BuildRoCC => {
+      // val otherRoccAcc = up(BuildRoCC)
+      List { (p: Parameters) =>
+        val roccBridge = LazyModule(new RoCCIOBridge(OpcodeSet.custom0)(p))
+        roccBridge
       } // ++ otherRoccAcc
     }
   })
@@ -89,6 +103,7 @@ class WithL2Cache
 
 class RV32Config            extends Config(new WithBootROMFile ++ (new CEConfig))
 class RV32WithRoCCAccConfig extends Config(new WithAccumulatorRoCCExample ++ new RV32Config)
+class RV32WithRoCCIOConfig  extends Config(new WithRoCCBridge ++ new RV32Config)
 class RV64Config            extends Config((new RV32Config).alterMap(Map((XLen, 64))))
 class RV64WithRoCCAccConfig extends Config(new WithAccumulatorRoCCExample ++ new RV64Config)
 
