@@ -1,3 +1,6 @@
 [submodule "src/main/resources/baremetal/rocc-software"]
 	path = src/main/resources/baremetal/rocc-software
 	url = https://github.com/ibm/rocc-software
+[submodule "dependencies/emitrtl"]
+	path = dependencies/emitrtl
+	url = git@github.com:morphingmachines/emitrtl.git

@@ -10,7 +10,7 @@ import org.chipsalliance.cde.config.Parameters
 
 class CERISCV(implicit p: Parameters) extends LazyModule with BindingScope {
   val cetile = LazyModule(
-    new RocketTileWithRoCCIO(
+    new simpleRoCC.RocketTileWithRoCCIO(
       p(TileKey).asInstanceOf[RocketTileParams],
       RocketCrossingParams(),
       HartsWontDeduplicate(p(TileKey)),
@@ -67,9 +67,11 @@ class CERISCVImp(outer: CERISCV) extends LazyModuleImp(outer) {
   val xLen      = outer.p(XLen)
   val addrWidth = outer.p(XLen)
   val tagWidth  = 5
-  val roccIO    = if (p(InsertRoCCIO)) Some(IO(Flipped(new SimpleRoCCCoreIO(xLen, addrWidth, tagWidth)))) else None
+  val roccIO =
+    if (p(simpleRoCC.InsertRoCCIO)) Some(IO(Flipped(new simpleRoCC.SimpleRoCCCoreIO(xLen, addrWidth, tagWidth))))
+    else None
 
-  if (p(InsertRoCCIO)) {
+  if (p(simpleRoCC.InsertRoCCIO)) {
     outer.cetile.module.roccifc.map(i => i <> roccIO.get)
   }
 

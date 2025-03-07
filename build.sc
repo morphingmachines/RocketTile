@@ -112,6 +112,13 @@ object testchipip extends ^.playground.build.CommonModule with SbtModule {
   override def moduleDeps     = super.moduleDeps ++ Seq(myrocketchip, blocks)
 }
 
+object emitrtl extends ^.playground.build.CommonModule with SbtModule {
+  override def millSourcePath =
+    os.pwd / "dependencies" /  "emitrtl"
+  override def moduleDeps = super.moduleDeps ++ Seq(myrocketchip)
+}
+
+
 trait ScalacOptions extends ScalaModule {
   override def scalacOptions = T {
     super.scalacOptions() ++ Seq(
@@ -135,7 +142,7 @@ object ce
   with ScalacOptions { m =>
   override def millSourcePath = os.pwd
 
-  override def moduleDeps = super.moduleDeps ++ Seq(myrocketchip, testchipip, inclusivecache)
+  override def moduleDeps = super.moduleDeps ++ Seq(myrocketchip, testchipip, inclusivecache, emitrtl)
 
   object test extends SbtModuleTests with ScalaTest with ScalafmtModule with ScalafixModule {
     override def ivyDeps = super.ivyDeps() ++ Agg(

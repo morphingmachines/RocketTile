@@ -24,30 +24,26 @@ class SimDUT(implicit p: Parameters) extends LazyModule {
   lazy val module = new SimDUTImp(this)
 }
 
-class SimDUTImp(outer: SimDUT) extends LazyModuleImp(outer) with TestHarnessShell {
+class SimDUTImp(outer: SimDUT) extends LazyModuleImp(outer) with emitrtl.TestHarnessShell {
   outer.ce.module.interrupts           := DontCare
   outer.ce.hartIdIO                    := DontCare
   outer.ce.bootROMResetVectorAddressIO := 0x10040.U
   io.success                           := SimTSI.connect(Some(outer.uncore.module.io.tsi), clock, reset)
   outer.ce.module.interrupts.msip      := outer.uncore.module.io.msip
 
-  if (outer.p(InsertRoCCIO)) {
+  if (outer.p(simpleRoCC.InsertRoCCIO)) {
     val accum = Module(new MyAccumulatorExampleModule)
     outer.ce.module.roccIO.get <> accum.io
   }
 }
 
-trait TestHarnessShell extends Module {
-  val io = IO(new Bundle { val success = Output(Bool()) })
-}
-
 //dut is passed as call-by-name parameter as Module instantiate should be wrapped in Module()
-class TestHarness(dut: => TestHarnessShell) extends Module {
+class TestHarness(dut: => emitrtl.TestHarnessShell) extends Module {
   val io = IO(new Bundle { val success = Output(Bool()) })
   io.success := Module(dut).io.success
 }
 
-class DUT extends Module with TestHarnessShell {
+class DUT extends Module with emitrtl.TestHarnessShell {
   val ldut = LazyModule(new SimDUT()(new Config(new RV32Config)))
   val dut  = Module(ldut.module)
   io.success := dut.io.success

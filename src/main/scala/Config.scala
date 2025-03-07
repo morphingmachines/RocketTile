@@ -4,7 +4,7 @@ import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.rocket.{DCacheParams, ICacheParams, MulDivParams, PgLevels, RocketCoreParams}
 import freechips.rocketchip.subsystem.{CacheBlockBytes, WithInclusiveCache, WithoutTLMonitors}
 import freechips.rocketchip.tile.{
-  // AccumulatorExample,
+  AccumulatorExample,
   BuildRoCC,
   MaxHartIdBits,
   OpcodeSet,
@@ -13,8 +13,6 @@ import freechips.rocketchip.tile.{
   XLen,
 }
 import org.chipsalliance.cde.config.{Config, Field, Parameters}
-
-case object InsertRoCCIO extends Field[Boolean](false)
 
 class CEConfig
   extends Config((site, here, _) => {
@@ -60,24 +58,23 @@ class CEConfig
   })
 
 class WithAccumulatorRoCCExample
-  extends Config((_, _, _) => {
+  extends Config((_, _, up) => {
     case BuildRoCC => {
-      // val otherRoccAcc = up(BuildRoCC)
+      val otherRoccAcc = up(BuildRoCC)
       List { (p: Parameters) =>
-        // val roccAcc = LazyModule(new AccumulatorExample(OpcodeSet.custom0)(p))
-        val roccAcc = LazyModule(new AccumulatorSuperModule(OpcodeSet.custom0)(p))
+        val roccAcc = LazyModule(new AccumulatorExample(OpcodeSet.custom0)(p))
         roccAcc
-      } // ++ otherRoccAcc
+      } ++ otherRoccAcc
     }
   })
 
 class WithRoCCBridge
   extends Config((_, _, _) => {
-    case InsertRoCCIO => true
+    case simpleRoCC.InsertRoCCIO => true
     case BuildRoCC => {
       // val otherRoccAcc = up(BuildRoCC)
       List { (p: Parameters) =>
-        val roccBridge = LazyModule(new RoCCIOBridge(OpcodeSet.custom0)(p))
+        val roccBridge = LazyModule(new simpleRoCC.RoCCIOBridge(OpcodeSet.custom0)(p))
         roccBridge
       } // ++ otherRoccAcc
     }
