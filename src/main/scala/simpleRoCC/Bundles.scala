@@ -61,7 +61,7 @@ class SimpleCustomCSRIO(xLen: Int) extends Bundle {
   val sdata = Input(UInt(xLen.W))
 }
 
-class SimpleRoCCCoreIO(xLen: Int, addrWidth: Int, tagWidth: Int, nRoCCCSRs: Int = 0) extends Bundle {
+class SimpleRoCCCoreIO(xLen: Int, addrWidth: Int, tagWidth: Int = 0, nRoCCCSRs: Int = 0) extends Bundle {
   val cmd       = Flipped(Decoupled(new SimpleRoCCCommand(xLen)))
   val resp      = Decoupled(new SimpleRoCCResponse(xLen))
   val mem       = new SimpleHellaCacheIO(xLen, addrWidth, tagWidth)
