@@ -15,5 +15,8 @@
             // Set as default commit template
             "default": true
         }
+    ],
+    "cSpell.words": [
+        "BAREMETAL"
     ]
 }

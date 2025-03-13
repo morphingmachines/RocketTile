@@ -1,4 +1,6 @@
 
+#ifndef ROCKET_BAREMETAL_SRC_EXIT_SYSCALL_H_
+#define ROCKET_BAREMETAL_SRC_EXIT_SYSCALL_H_
 // RISC-V ABI, a0-a7 registers are used for passing function arguments.
 // for 'ecall' (Linux system calls)  a7 specifies the Linux function number in unistd.h.
 // 93 is the Linux service call number to terminate the program.
@@ -39,3 +41,7 @@ static inline __attribute__((always_inline)) void exit_fail(int num)
         // This point will not be executed, system exit function will be called with no return
     );
 }
+
+#endif  // ROCKET_BAREMETAL_SRC_EXIT_SYSCALL_H_
+
+

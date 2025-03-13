@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include "exit_syscall.h"
 #include "include/dma.h"
+#include "cache_op.h"
 
 void assert(int cond, int v)
 {
@@ -16,12 +17,23 @@ static inline __attribute__((always_inline)) void start_dma()
   doWrite(CONTROL_REG, 1)
 }
 
+#define NUMWORDS 32
+
+int src[NUMWORDS] __attribute__((aligned(64)));
+int dst[NUMWORDS] __attribute__((aligned(64)));
+
 void bare_main(void)
 {
 
-  doWrite(SRCADDR_REG, 0x80010000);
-  doWrite(DSTADDR_REG, 0x80020000);
-  doWrite(BYTELEN_REG, 128);
+  for(int i=0; i<NUMWORDS; i++){
+    src[i] = i;
+    dst[i] = 0;
+  }
+
+
+  doWrite(SRCADDR_REG, src);
+  doWrite(DSTADDR_REG, dst);
+  doWrite(BYTELEN_REG, NUMWORDS * sizeof(int));
 
   start_dma();
 
@@ -34,6 +46,10 @@ void bare_main(void)
   }
 
   assert((done & 0xC) == 0, 2); // DMA done without errors
+
+  for(int i=0; i<NUMWORDS; i++){
+    assert(src[i] == dst[i], 3);
+  }  
 
   //-- If you have reached here, then everything seems good.
   exit_pass();
