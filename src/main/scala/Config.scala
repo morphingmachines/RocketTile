@@ -13,6 +13,7 @@ import freechips.rocketchip.tile.{
   XLen,
 }
 import org.chipsalliance.cde.config.{Config, Field, Parameters}
+import emitrtl.ConfigPrinter
 
 class CEConfig
   extends Config((site, here, _) => {
@@ -108,3 +109,13 @@ class RV32WithL2 extends Config(new RV32Config ++ new WithL2Cache)
 class RV64WithL2 extends Config(new RV64Config ++ new WithL2Cache)
 
 class RV32WithNoTLMonitors extends Config(new RV32Config ++ new WithoutTLMonitors ++ new WithInclusiveCache)
+
+
+object RocketTileConfigPrinter {
+  def printConfig(implicit p: Parameters) = {
+
+    val xLen = p(XLen)
+    ConfigPrinter.printParams(s"XLen:, $xLen");
+
+  }
+}

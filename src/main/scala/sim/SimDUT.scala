@@ -33,6 +33,8 @@ class SimDUT(implicit p: Parameters) extends BaseDUT {
 }
 
 class SimDUTImp(outer: SimDUT) extends LazyModuleImp(outer) with emitrtl.TestHarnessShell {
+  RocketTileConfigPrinter.printConfig(outer.p)
+
   outer.ce.module.interrupts           := DontCare
   outer.ce.hartIdIO                    := DontCare
   outer.ce.bootROMResetVectorAddressIO := 0x10040.U

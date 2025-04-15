@@ -42,7 +42,7 @@ object ceMain extends App with LazyToplevel {
   chisel2firrtl()
   firrtl2sv()
   genDiplomacyGraph()
-
+  emitrtl.ConfigPrinter.moveParametersFile(out_dir)
 }
 
 object TestLazyMain extends App with LazyToplevel with VerilateTestHarness with WithLazyModuleDUT {
