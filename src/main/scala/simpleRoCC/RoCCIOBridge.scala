@@ -12,8 +12,8 @@ import freechips.rocketchip.tile.{
   RocketTile,
   RocketTileModuleImp,
   RocketTileParams,
+  TileKey,
   TileVisibilityNodeKey,
-  XLen,
 }
 import freechips.rocketchip.tilelink.{
   TLClientNode,
@@ -24,7 +24,7 @@ import freechips.rocketchip.tilelink.{
   TLSlavePortParameters,
 }
 import org.chipsalliance.cde.config.{Field, Parameters}
-
+import org.chipsalliance.diplomacy.DisableMonitors
 case object InsertRoCCIO extends Field[Boolean](false)
 
 class RoCCIOBridgeTop(opcodes: OpcodeSet = OpcodeSet.custom0, roccCSRs: Seq[CustomCSR] = Nil)(implicit p: Parameters)
@@ -62,8 +62,8 @@ class RoCCIOBridge(opcodes: OpcodeSet = OpcodeSet.custom0, roccCSRs: Seq[CustomC
 }
 
 class RoCCIOBridgeImp(outer: RoCCIOBridge) extends LazyRoCCModuleImp(outer) {
-  val xLen      = outer.p(XLen)
-  val addrWidth = outer.p(XLen)
+  val xLen      = outer.p(TileKey).core.xLen
+  val addrWidth = outer.p(TileKey).core.xLen
   val tagWidth  = 5
 
   val roccifc = IO(Flipped(new SimpleRoCCCoreIO(xLen, addrWidth, tagWidth)))
@@ -96,7 +96,7 @@ class RocketTileWithRoCCIO(
 }
 
 class RocketTileWithRoCCIOImp(outer: RocketTileWithRoCCIO) extends RocketTileModuleImp(outer) {
-  val addrWidth = outer.p(XLen)
+  val addrWidth = outer.p(TileKey).core.xLen
   val tagWidth  = 5
 
   val roccifc = if (p(InsertRoCCIO)) Some(IO(Flipped(new SimpleRoCCCoreIO(xLen, addrWidth, tagWidth)))) else None

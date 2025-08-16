@@ -1,12 +1,16 @@
 package ce
 
 import chisel3._
-import freechips.rocketchip.diplomacy._
+import freechips.rocketchip.diplomacy.{AddressSet, RegionType, TransferSizes}
 import freechips.rocketchip.interrupts._
+import freechips.rocketchip.resources.BindingScope
 import freechips.rocketchip.subsystem.RocketCrossingParams
-import freechips.rocketchip.tile.{HartsWontDeduplicate, NMI, RocketTileParams, TileKey, TraceBundle, XLen}
+import freechips.rocketchip.tile.{HartsWontDeduplicate, NMI, RocketTileParams, TileKey, TraceBundle}
 import freechips.rocketchip.tilelink.{TLManagerNode, TLSlaveParameters, TLSlavePortParameters}
 import org.chipsalliance.cde.config.Parameters
+import org.chipsalliance.diplomacy.ValName
+import org.chipsalliance.diplomacy.bundlebridge.{BundleBridgeSink, BundleBridgeSource}
+import org.chipsalliance.diplomacy.lazymodule.{InModuleBody, LazyModule, LazyModuleImp}
 
 class CERISCV(implicit p: Parameters) extends LazyModule with BindingScope {
   val cetile = LazyModule(
@@ -64,8 +68,8 @@ class CERISCVImp(outer: CERISCV) extends LazyModuleImp(outer) {
   })
 
   override implicit val p: Parameters = outer.cetile.p
-  val xLen      = outer.p(XLen)
-  val addrWidth = outer.p(XLen)
+  val xLen      = outer.p(TileKey).core.xLen
+  val addrWidth = outer.p(TileKey).core.xLen
   val tagWidth  = 5
   val roccIO =
     if (p(simpleRoCC.InsertRoCCIO)) Some(IO(Flipped(new simpleRoCC.SimpleRoCCCoreIO(xLen, addrWidth, tagWidth))))

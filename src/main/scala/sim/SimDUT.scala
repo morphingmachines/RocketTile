@@ -3,12 +3,12 @@ package ce.sim
 import ce._
 import ce.simpleRoCC.DMA
 import chisel3._
-import freechips.rocketchip.diplomacy.{AddressSet, LazyModule, LazyModuleImp}
+import freechips.rocketchip.diplomacy.AddressSet
 import freechips.rocketchip.subsystem.CacheBlockBytes
 import freechips.rocketchip.tilelink.TLRAM
 import org.chipsalliance.cde.config.Parameters
+import org.chipsalliance.diplomacy.lazymodule.{LazyModule, LazyModuleImp}
 import testchipip.tsi.SimTSI
-
 abstract class BaseDUT(implicit p: Parameters) extends LazyModule {
 
   val ramOffsetAddrWidth = 22

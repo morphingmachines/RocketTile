@@ -32,6 +32,7 @@ class SimpleHellaCacheReq(xLen: Int, addrWidth: Int, tagWidth: Int) extends Bund
   val mask = UInt(dataBytes.W)
 
   val phys     = Bool()
+  val no_resp  = Bool() // The dcache may omit generating a response for this request
   val no_alloc = Bool()
   val no_xcpt  = Bool()
 }

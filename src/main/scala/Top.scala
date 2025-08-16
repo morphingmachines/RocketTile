@@ -1,8 +1,9 @@
 package ce
 
 import emitrtl._
-import freechips.rocketchip.diplomacy.LazyModule
 import freechips.rocketchip.tile.OpcodeSet
+import org.chipsalliance.diplomacy.ValName
+import org.chipsalliance.diplomacy.lazymodule.LazyModule
 
 /** To run from a terminal shell
   * {{{
@@ -21,7 +22,6 @@ object ceMain extends App with LazyToplevel {
     case "RoCCIO" => {
       import freechips.rocketchip.tile.TileVisibilityNodeKey
       import freechips.rocketchip.tilelink.TLEphemeralNode
-      import freechips.rocketchip.diplomacy.ValName
       val p: Parameters =
         (new Config(new RV32Config)).alterMap(Map(TileVisibilityNodeKey -> TLEphemeralNode()(ValName("tile_master"))))
       LazyModule(new simpleRoCC.RoCCIOBridgeTop()(p))
@@ -29,7 +29,6 @@ object ceMain extends App with LazyToplevel {
     case "AccumAccel" => {
       import freechips.rocketchip.tile.TileVisibilityNodeKey
       import freechips.rocketchip.tilelink.TLEphemeralNode
-      import freechips.rocketchip.diplomacy.ValName
       val p: Parameters =
         (new Config(new RV32Config)).alterMap(Map(TileVisibilityNodeKey -> TLEphemeralNode()(ValName("tile_master"))))
       LazyModule(new AccumulatorWrapper(OpcodeSet.custom0)(p))

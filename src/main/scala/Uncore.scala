@@ -2,10 +2,10 @@ package ce
 
 import chisel3._
 import freechips.rocketchip.devices.tilelink.{BootROMParams, CLINT, CLINTParams, TLROM}
-import freechips.rocketchip.diplomacy.{BufferParams, LazyModule, LazyModuleImp}
+import freechips.rocketchip.diplomacy.BufferParams
 import freechips.rocketchip.interrupts.{IntSinkNode, IntSinkParameters, IntSinkPortParameters}
 import freechips.rocketchip.subsystem.CacheBlockBytes
-import freechips.rocketchip.tile.XLen
+import freechips.rocketchip.tile.TileKey
 import freechips.rocketchip.tilelink.{
   EarlyAck,
   TLBroadcast,
@@ -18,7 +18,9 @@ import freechips.rocketchip.tilelink.{
   TLWidthWidget,
   TLXbar,
 }
+import freechips.rocketchip.util.SystemFileName
 import org.chipsalliance.cde.config.Parameters
+import org.chipsalliance.diplomacy.lazymodule.{LazyModule, LazyModuleImp}
 import sifive.blocks.inclusivecache.{
   CacheParameters,
   InclusiveCache,
@@ -28,9 +30,10 @@ import sifive.blocks.inclusivecache.{
 import testchipip.tsi._
 
 class Uncore(implicit p: Parameters) extends LazyModule {
-  val bootrom_params = new BootROMParams(contentFileName = p(ce.BootROMFile))
+  val fileName       = SystemFileName(p(ce.BootROMFile))
+  val bootrom_params = new BootROMParams(contentFileName = fileName)
   import java.nio.file.{Files, Paths}
-  val rom_contents = Files.readAllBytes(Paths.get(bootrom_params.contentFileName))
+  val rom_contents = Files.readAllBytes(Paths.get(bootrom_params.contentFileName.fileName))
   val tlrom = LazyModule(
     new TLROM(
       base = bootrom_params.address,
@@ -40,7 +43,8 @@ class Uncore(implicit p: Parameters) extends LazyModule {
     ),
   )
 
-  val clint   = LazyModule(new CLINT(params = CLINTParams(), beatBytes = p(XLen) / 8))
+  val ceXLen  = p(TileKey).core.xLen
+  val clint   = LazyModule(new CLINT(params = CLINTParams(), beatBytes = ceXLen / 8))
   val intSink = IntSinkNode(Seq(IntSinkPortParameters(Seq(IntSinkParameters()))))
 
   def skipMMIO(x: TLClientParameters) = {
@@ -58,7 +62,7 @@ class Uncore(implicit p: Parameters) extends LazyModule {
   val memoryNode = new TLIdentityNode
 
   clint.node := TLBuffer(BufferParams(1, false, false)) := TLFragmenter(
-    p(XLen) / 8,
+    ceXLen / 8,
     p(CacheBlockBytes),
     true,
     EarlyAck.AllPuts,

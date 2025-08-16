@@ -2,11 +2,12 @@ package ce.simpleRoCC
 
 import chisel3._
 import chisel3.util._
-import freechips.rocketchip.diplomacy.{IdRange, LazyModule, LazyModuleImp}
-import freechips.rocketchip.tile.XLen
+import freechips.rocketchip.diplomacy.IdRange
+import freechips.rocketchip.tile.TileKey
 import freechips.rocketchip.tilelink.{IDMapGenerator, TLClientNode, TLMasterParameters, TLMasterPortParameters}
 import freechips.rocketchip.util.TwoWayCounter
 import org.chipsalliance.cde.config.Parameters
+import org.chipsalliance.diplomacy.lazymodule.{LazyModule, LazyModuleImp}
 
 /**   - 0 : Control Register
   *   - 1 : Status Register
@@ -151,7 +152,7 @@ class DMA(
   implicit p: Parameters,
 ) extends LazyModule {
 
-  val xLen = p(XLen)
+  val xLen = p(TileKey).core.xLen
 
   val rdClient = new TLClientNode(
     Seq(

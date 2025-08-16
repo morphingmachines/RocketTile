@@ -1,6 +1,6 @@
 package ce
 
-import freechips.rocketchip.diplomacy._
+import freechips.rocketchip.diplomacy.{AddressSet, RegionType, TransferSizes}
 import freechips.rocketchip.tile.{AccumulatorExample, OpcodeSet, TileVisibilityNodeKey}
 import freechips.rocketchip.tilelink.{
   TLClientNode,
@@ -11,6 +11,7 @@ import freechips.rocketchip.tilelink.{
   TLSlavePortParameters,
 }
 import org.chipsalliance.cde.config.Parameters
+import org.chipsalliance.diplomacy.DisableMonitors
 
 class AccumulatorWrapper(opcodes: OpcodeSet = OpcodeSet.custom0)(implicit p: Parameters)
   extends AccumulatorExample(opcodes) {
