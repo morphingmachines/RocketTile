@@ -32,7 +32,7 @@ class SimDUT(implicit p: Parameters) extends BaseDUT {
   lazy val module = new SimDUTImp(this)
 }
 
-class SimDUTImp(outer: SimDUT) extends LazyModuleImp(outer) with emitrtl.TestHarnessShell {
+class SimDUTImp(outer: SimDUT) extends LazyModuleImp(outer) with emitrtl.top.TestHarnessShell {
   RocketTileConfigPrinter.printConfig(outer.p)
 
   outer.ce.module.interrupts           := DontCare
@@ -56,7 +56,9 @@ class SimDUTWithRoCCIODMA(implicit p: Parameters) extends BaseDUT {
   lazy val module = new SimDUTWithRoCCIODMAImp(this)
 }
 
-class SimDUTWithRoCCIODMAImp(outer: SimDUTWithRoCCIODMA) extends LazyModuleImp(outer) with emitrtl.TestHarnessShell {
+class SimDUTWithRoCCIODMAImp(outer: SimDUTWithRoCCIODMA)
+  extends LazyModuleImp(outer)
+  with emitrtl.top.TestHarnessShell {
   outer.ce.module.interrupts           := DontCare
   outer.ce.hartIdIO                    := DontCare
   outer.ce.bootROMResetVectorAddressIO := 0x10040.U
