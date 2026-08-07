@@ -30,6 +30,12 @@ To run simulations, you need to install the following [dependencies](./doc/depen
 
  We assume [Spike RISC-V ISA Simulator](https://github.com/riscv-software-src/riscv-isa-sim) is installed and `RISC-V` environment variable is set to the Spike install path. The test bench setup uses Front-End Server (FESVR), a C++ library that manages communication between a host machine and a RISC-V DUT, which is part of the [Spike](https://github.com/riscv-software-src/riscv-isa-sim) build.
 
+`LD_LIBRARY_PATH` must be set to `libriscv.so` path, part of the [rocket-tools](./doc/dependencies.md) install (`$RISCV/lib`).
+
+```sh
+export LD_LIBRARY_PATH=$RISCV/lib:$LD_LIBRARY_PATH
+```
+
 * The simulator executable can be generated using `make verilate`.
 
 ```sh

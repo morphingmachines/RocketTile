@@ -12,7 +12,6 @@ import testchipip.tsi.SimTSI
 abstract class BaseDUT(implicit p: Parameters) extends LazyModule {
 
   val ramOffsetAddrWidth = 22
-  val ce                 = LazyModule(new CERISCV)
   val tlram = LazyModule(
     new TLRAM(address = new AddressSet(0x80000000L, (1 << ramOffsetAddrWidth) - 1), beatBytes = p(CacheBlockBytes)),
   )
@@ -22,6 +21,7 @@ abstract class BaseDUT(implicit p: Parameters) extends LazyModule {
   } else {
     LazyModule(new Uncore with HasNoL2Cache)
   }
+  val ce = LazyModule(new CERISCV)
 
   uncore.mbus.node := ce.cetile.masterNode
   tlram.node       := uncore.memoryNode
@@ -42,8 +42,7 @@ class SimDUTImp(outer: SimDUT) extends LazyModuleImp(outer) with emitrtl.top.Tes
   outer.ce.module.interrupts.msip      := outer.uncore.module.io.msip
 
   if (outer.p(simpleRoCC.InsertRoCCIO)) {
-    val accum = Module(new simpleRoCC.Accumulator)
-    outer.ce.module.roccIO.get <> accum.io
+    outer.ce.module.roccIO.get := DontCare
   }
 }
 

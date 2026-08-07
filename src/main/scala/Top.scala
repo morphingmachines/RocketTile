@@ -47,15 +47,17 @@ object ceMain extends App with LazyToplevel {
 object TestLazyMain extends App with LazyToplevel with VerilateTestHarness with WithLazyModuleDUT {
   import org.chipsalliance.cde.config.Config
   val str = if (args.length == 0) "" else args(0)
+
+  var configStr = "None:None"
   lazy val lazyTop = str match {
-    case "RV32"        => LazyModule(new ce.sim.SimDUT()(new Config(new RV32Config)))
-    case "RV64"        => LazyModule(new ce.sim.SimDUT()(new Config(new RV64WithL2)))
-    case "RV32RoCC"    => LazyModule(new ce.sim.SimDUT()(new Config(new RV32WithRoCCIOConfig)))
-    case "RV32RoCCDMA" => LazyModule(new ce.sim.SimDUTWithRoCCIODMA()(new Config(new RV32WithRoCCIOConfig)))
-    case "RV64RoCC"    => LazyModule(new ce.sim.SimDUT()(new Config(new RV64WithRoCCAccConfig)))
-    case _             => throw new Exception("Unknown Module Name!")
+    case "RV32" => {
+      configStr = "ce:RV32Config"
+      LazyModule(new ce.sim.SimDUT()(new Config(new RV32Config)))
+    }
+    case _ => throw new Exception("Unknown Module Name!")
   }
 
+  override def configString = configStr
   chisel2firrtl()
   genDiplomacyGraph()
   firrtl2sv()

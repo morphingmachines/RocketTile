@@ -3,7 +3,15 @@ package ce
 import emitrtl.ConfigPrinter
 import freechips.rocketchip.rocket.{DCacheParams, ICacheParams, MulDivParams, RocketCoreParams}
 import freechips.rocketchip.subsystem.{CacheBlockBytes, WithInclusiveCache, WithoutTLMonitors}
-import freechips.rocketchip.tile.{AccumulatorExample, BuildRoCC, MaxHartIdBits, OpcodeSet, RocketTileParams, TileKey}
+import freechips.rocketchip.tile.{
+  AccumulatorExample,
+  BuildRoCC,
+  FPUParams,
+  MaxHartIdBits,
+  OpcodeSet,
+  RocketTileParams,
+  TileKey,
+}
 import org.chipsalliance.cde.config.{Config, Field, Parameters}
 import org.chipsalliance.diplomacy.lazymodule.LazyModule
 class CEConfig
@@ -15,7 +23,7 @@ class CEConfig
           xLen = 32,
           pgLevels = 2,
           useVM = false,
-          fpu = None,
+          fpu = Some(FPUParams(minFLen = 32, fLen = 32, divSqrt = true, sfmaLatency = 3)),
           mulDiv = Some(MulDivParams(mulUnroll = 8)),
           useNMI = true,
           clockGate = true,
@@ -30,7 +38,7 @@ class CEConfig
             nWays = 1,
             nTLBSets = 1,
             nTLBWays = 4,
-            nMSHRs = 0,
+            nMSHRs = 2,
             blockBytes = here(CacheBlockBytes),
           ),
         ),
