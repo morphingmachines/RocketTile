@@ -7,15 +7,17 @@
 
 static inline __attribute__((always_inline)) void exit_pass(void)
 {
+    int num = 0;
+    int testnum = 1;
     __asm__ volatile(
         "fence;"
-        "li gp, 1;"
+        "addi gp, %[testnum], 0;"
         "li a7, 93;"
-        "li a0, 0;"
+        "addi a0, %[num], 0;"
         "ecall;"
-        : /* output: none %0 */
-        : /* input: none */
-        : /* clobbers: none*/
+        :                                        /* output: none */
+        : [testnum] "r"(testnum), [num] "r"(num) /* input */
+        :                                        /* clobbers: none */
         // This point will not be executed, system exit function will be called with no return
     );
 }

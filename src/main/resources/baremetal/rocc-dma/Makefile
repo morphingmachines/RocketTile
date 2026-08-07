@@ -4,7 +4,7 @@ OUTNAME := $(notdir $(shell pwd))
 
 -include ./../env.mk
 
-TOP_LAZY_MODULE_CONFIG = ce.sim.SimDUTWithRoCCIODMA
+TOP_LAZY_MODULE_CONFIG = ce.sim.SimDUTWithRoCCIODMA.None
 RELATIVE_VERILATED_SIM_EXE = ./../$(SUFFIX_RELATIVE_VERILATED_SIM_EXE)
 
 CPPFLAGS += -Wall -I./../

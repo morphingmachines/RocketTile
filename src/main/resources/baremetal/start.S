@@ -2,9 +2,7 @@
 
 #define CUSTOM_X 0
 
-    .macro init;
-    .endm
-
+    RVTEST_RV32UF
 start:
 
     RVTEST_CODE_BEGIN

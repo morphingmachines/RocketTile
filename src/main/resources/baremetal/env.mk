@@ -9,7 +9,7 @@ RISCV_GCC ?= $(RISCV_PREFIX)-gcc
 TOP_LAZY_MODULE_CONFIG ?= ce.sim.SimDUT
 
 CFLAGS_RV64=-mabi=lp64 -march=rv64imc
-CFLAGS_RV32=-mabi=ilp32 -march=rv32imc
+CFLAGS_RV32=-mabi=ilp32 -march=rv32imfc
 
 CC = $(RISCV_GCC)
 
@@ -21,7 +21,7 @@ CFLAGS += -O3
 #--print-gc-sections : prints removed sections
 LDFLAGS = -nostdlib -nostartfiles -nodefaultlibs -Wl,-gc-sections -Wl,-print-gc-sections -Wl,-Map=$(OUTNAME).map -L$(RISCV)/$(RISCV_PREFIX)/lib -T$(LINKFILE) -O3
 
-SUFFIX_RELATIVE_VERILATED_SIM_EXE = ../../../../generated_sv_dir/$(TOP_LAZY_MODULE_CONFIG)/obj_dir/VTestHarness
+SUFFIX_RELATIVE_VERILATED_SIM_EXE = ../../../../generated_sv_dir/$(TOP_LAZY_MODULE_CONFIG)/chisel_gen_rtl/obj_dir/VTestHarness
 
 
 ifeq ($(XLEN), 64)
