@@ -86,7 +86,7 @@ class UncoreImp(outer: Uncore) extends LazyModuleImp(outer) {
   io.tsi <> outer.tsi2tl.module.io.tsi
   io.state                      := outer.tsi2tl.module.io.state
   io.msip                       := outer.intSink.in(0)._1(0)
-  outer.clint.module.io.rtcTick := false.B
+  outer.clint.module.io.rtcTick := true.B
 }
 
 trait HasNoL2Cache { this: Uncore =>
