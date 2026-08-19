@@ -17,6 +17,7 @@ object ceMain extends App with LazyToplevel {
   val lazyTop = str match {
     case "CE"         => LazyModule(new ce.CeTop()(new Config(new RV32Config)))
     case "RV32"       => LazyModule(new ce.sim.SimDUT()(new Config(new RV32Config)))
+    case "RV32D"      => LazyModule(new ce.sim.SimDUT()(new Config(new RV32DConfig)))
     case "RV64RoCC"   => LazyModule(new ce.sim.SimDUT()(new Config(new RV64WithRoCCAccConfig)))
     case "RV32RoCCIO" => LazyModule(new ce.sim.SimDUT()(new Config(new RV32WithRoCCIOConfig)))
     case "RoCCIO" => {
@@ -53,6 +54,10 @@ object TestLazyMain extends App with LazyToplevel with VerilateTestHarness with 
     case "RV32" => {
       configStr = "ce:RV32Config"
       LazyModule(new ce.sim.SimDUT()(new Config(new RV32Config)))
+    }
+    case "RV32D" => {
+      configStr = "ce:RV32DConfig"
+      LazyModule(new ce.sim.SimDUT()(new Config(new RV32DConfig)))
     }
     case _ => throw new Exception("Unknown Module Name!")
   }

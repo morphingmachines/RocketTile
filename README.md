@@ -55,3 +55,20 @@ More targets can be listed by running `make`
 cd src/main/resources/baremetal/vecAdd
 make run
 ```
+
+#### Run `vecAddD` program on the simulator (RV32D — double-precision FPU)
+```sh
+cd src/main/resources/baremetal/vecAddD
+make run
+```
+
+`vecAddD` uses `RV32DConfig` (`CEConfigRV32D`): `xLen=32`, `fLen=64` (double-precision FPU). Key config parameters required for correct simulation:
+
+```scala
+DCacheParams(
+  nMSHRs      = 0,        // blocking DCache (DCache.scala) — required for RV32D correctness
+  subWordBits = Some(32), // split SRAM at 32-bit granularity (8 lanes × 32-bit)
+)
+```
+
+**Why these parameters matter**: with `fLen=64`, `coreDataBits = max(xLen, fLen) = 64`. The non-blocking DCache (`nMSHRs > 0`) uses 64-bit SRAM lanes with no sub-lane byte enables. A 32-bit `sw` to `tohost` followed by `sw zero, tohost+4` both map to the same 64-bit lane — the second store zeroes the first, preventing simulation exit. Setting `nMSHRs=0` selects the blocking `DCache`, which respects `subWordBits=32` and splits the SRAM into 32-bit lanes, eliminating the collision. See `src/main/resources/baremetal/vecAddD/diagnosis/bug_report.md` for the full diagnosis.

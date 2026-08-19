@@ -9,7 +9,8 @@ RISCV_GCC ?= $(RISCV_PREFIX)-gcc
 TOP_LAZY_MODULE_CONFIG ?= ce.sim.SimDUT
 
 CFLAGS_RV64=-mabi=lp64 -march=rv64imc
-CFLAGS_RV32=-mabi=ilp32 -march=rv32imfc
+CFLAGS_RV32=-mabi=ilp32f -march=rv32imfc
+CFLAGS_RV32D=-mabi=ilp32d -march=rv32imfdc
 
 CC = $(RISCV_GCC)
 

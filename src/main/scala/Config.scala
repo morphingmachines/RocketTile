@@ -57,6 +57,52 @@ class CEConfig
     case MaxHartIdBits => 8
   })
 
+
+
+class CEConfigRV32D
+  extends Config((_, here, _) => {
+    case CacheBlockBytes => 32
+    case TileKey => {
+      RocketTileParams(
+        core = RocketCoreParams(
+          xLen = 32,
+          pgLevels = 2,
+          useVM = false,
+          fpu = Some(FPUParams(minFLen = 32, fLen = 64, divSqrt = true, sfmaLatency = 3, dfmaLatency = 4)),
+          mulDiv = Some(MulDivParams(mulUnroll = 8)),
+          useNMI = true,
+          clockGate = true,
+          mtvecWritable = true,
+          mtvecInit = Some(BigInt(0x10000)),
+        ),
+        btb = None,
+        dcache = Some(
+          DCacheParams(
+            rowBits = here(CacheBlockBytes) * 8,
+            nSets = 256,
+            nWays = 1,
+            nTLBSets = 1,
+            nTLBWays = 4,
+            nMSHRs = 0,
+            blockBytes = here(CacheBlockBytes),
+            subWordBits = Some(32),
+          ),
+        ),
+        icache = Some(
+          ICacheParams(
+            rowBits = here(CacheBlockBytes) * 8,
+            nSets = 64,
+            nWays = 1,
+            nTLBSets = 1,
+            nTLBWays = 4,
+            blockBytes = here(CacheBlockBytes),
+          ),
+        ),
+      )
+    }
+    case MaxHartIdBits => 8
+  })
+
 class CEConfig64
   extends Config((_, here, _) => {
     case CacheBlockBytes => 64
@@ -142,6 +188,7 @@ class WithL2Cache
   })
 
 class RV32Config            extends Config(new WithBootROMFile ++ (new CEConfig))
+class RV32DConfig           extends Config(new WithBootROMFile ++ (new CEConfigRV32D))
 class RV32WithRoCCAccConfig extends Config(new WithAccumulatorRoCCExample ++ new RV32Config)
 class RV32WithRoCCIOConfig  extends Config(new WithRoCCBridge ++ new RV32Config)
 class RV64Config            extends Config(new WithBootROMFile ++ (new CEConfig64))
